@@ -135,7 +135,7 @@ end
 | redirect_to(val)<br>                        | 「expect」内のレスポンスがvalにリダイレクトしていれば真(true)<br>　例: expect(response).to redirect_to(User.last)<br>                                                                          | 
 | have_content(val)<br>                       | 「expect」内の値にvalの値が含まれていれば真(true)主にsystem_testで利用される<br>　例: expect(page).have_content("successfully destroyed.")                                                     | 
 
-Rspecと一緒に使われるツールあライブラリには以下のものがあります。
+Rspecと一緒に使われるツールやライブラリには以下のものがあります。
 1. Capybara：ウェブアプリケーションの統合テストを実行するためのフレームワークであり、ブラウザの操作をシミュレートすることができます。Rspecと組み合わせて使用することで、ウェブアプリケーションの挙動をテストすることができます。
 2. FactoryBot： テストデータを簡単に作成するためのライブラリであり、モデルのインスタンスを生成するためのシンプルなDSLを提供します。Rspecテスト内でテストデータを簡単に作成するために使用されます。
 3. DatabaseCleaner：テスト実行時にデータベースをクリーンアップするためのライブラリであり、テスト間のデータの汚染を防ぎます。Rspecと組み合わせて使用することで、テストが独立して実行されることを保証します。
