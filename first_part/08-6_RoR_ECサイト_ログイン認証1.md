@@ -1,11 +1,28 @@
 ## 8.6 Ruby on Rails：ECサイトの開発 ログイン認証とユーザー管理1
 
+### ユーザー管理
+ウェブ上にあるサービスを利用しているとアカウント登録やログイン機能を使っていると思います。ECサイトをはじめ様々なウェブアプリでは現在ユーザーの管理は必須になっています。  
+ユーザーアカウントとカートを紐づけることによって今誰がどのようなものを購入しようとしているのかなど、ユーザーに関連するデータを紐づけることができます。  
+ユーザーを管理することのメリットは多岐にわたり、サービスによって変わります。その中の一部をECサイトを例にして挙げると以下の通りになります。  
+
+1. 顧客情報の集約：顧客の基本情報や購買履歴などのデータを集約し、効果的に管理することができます。これにより、顧客の好みや行動パターンを把握し、ターゲティングされたマーケティング戦略を展開することができます。
+
+2. パーソナライズされたサービス提供：顧客ごとに異なるサービスや特典を提供することができます。例えば、過去の購買履歴や興味関心に基づいて商品のレコメンデーションを行ったり、特定のユーザーに割引クーポンを提供することが可能です。
+
+3. セキュリティの向上：顧客の個人情報や支払い情報を安全に保管することができます。また、アカウントごとにアクセス権を管理することで、不正なアクセスや情報漏洩を防止することができます。
+
+4. 顧客満足度の向上：顧客が容易にアカウントを作成し、注文履歴を追跡したり、配送状況を確認したりすることができます。これにより、顧客の利便性が向上し、購買体験が向上します。
+
+5. 効率的なマーケティング：ユーザー管理システムを活用することで、顧客の購買履歴や行動データを分析し、ターゲティングされたマーケティングキャンペーンを展開することができます。顧客にとって関心のある商品やサービスを提供することで、売上や顧客ロイヤルティを向上させることができます。
+
+
 ### 8.6.1 ログイン認証
-商品一覧ページには特定の人しかアクセスできないようにするために認証機能を追加します。
-認証を実現するために`Devise`というgemを使って実装します。
+商品一覧ページには特定の人しかアクセスできないようにするために認証機能を追加します。  
+認証を実現するために`Devise`というgemを使って実装します。  
 
 ### 8.6.2 Deviseとは
-DeviseとはRuby on Railsでも利用できる認証機能を提供してくれるgemです。
+`Devise`とはRailsでも利用できる認証機能を提供してくれるgemです。  
+`Devise`を使うことによってユーザー承認やパスワードのリセット、セッション管理などの機能を迅速かつ安全に実装することができます。  
 いくつかのモジュールで構成されています。
 
 |モジュール名|説明|
@@ -30,8 +47,8 @@ https://github.com/plataformatec/devise/wiki
 まずは新しくアプリを作成します。
 
 ```sh
-rails new devise_practice
-cd devise_practice
+$ rails new devise_practice
+$ cd devise_practice
 ```
 
 アプリが作成出来たら`Gemfile`に`devise`を追記しましょう。
@@ -49,9 +66,61 @@ gem 'devise' # 追加
 
 `bundle install`が完了したら下記のコマンドで`Devise`をインストールします。
 
-```
+```sh
 $ rails g devise:install
 ```
+
+`devise:install`を実行すると以下のような実行結果が表示されます。  
+```sh
+      create  config/initializers/devise.rb
+      create  config/locales/devise.en.yml
+===============================================================================
+
+Depending on your application's configuration some manual setup may be required:
+
+  1. Ensure you have defined default url options in your environments files. Here
+     is an example of default_url_options appropriate for a development environment
+     in config/environments/development.rb:
+
+       config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }
+
+     In production, :host should be set to the actual host of your application.
+
+     * Required for all applications. *
+
+  2. Ensure you have defined root_url to *something* in your config/routes.rb.
+     For example:
+
+       root to: "home#index"
+
+     * Not required for API-only Applications *
+
+  3. Ensure you have flash messages in app/views/layouts/application.html.erb.
+     For example:
+
+       <p class="notice"><%= notice %></p>
+       <p class="alert"><%= alert %></p>
+
+     * Not required for API-only Applications *
+
+  4. You can copy Devise views (for customization) to your app by running:
+
+       rails g devise:views
+
+     * Not required *
+
+===============================================================================
+```
+
+1. デフォルトのURLオプションの設定：開発環境や本番環境などに応じて、アプリケーションのURLオプションを設定します。開発環境の例が記載されており、ポート番号やホスト名などが含まれます。
+
+2. root_urlの定義: アプリケーションのルートURLを設定します。これは、ルーティングの設定に関連しています。
+
+3. Flashメッセージの設定: ユーザーに通知を表示するためのFlashメッセージをレイアウトに追加します。
+
+4. Deviseのビューのコピー: カスタマイズや変更が必要な場合に、Deviseのビューをアプリケーションにコピーします。
+
+これで`Devise`を使ったログイン認証の準備が整いました。  
 
 ### 8.6.4 ログイン処理の作成の流れ
 

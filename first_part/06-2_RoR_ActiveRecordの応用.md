@@ -4,7 +4,9 @@
 
 ### 6.2.1 「N+1問題」とは
 
-一覧画面などに表示するデータを取得するとき、SQLのクエリが「データ量(N) + 1」発行され、データ量が多くなるにつれてパフォーマンスを低下させてしまう問題です。例えばデータの数だけSELECT文を発行すると1回が1msでも、データの数が増えるとその数だけSELECT文を発行することになり、パフォーマンスが悪くなっていきます。
+一覧画面などに表示するデータを取得するとき、SQLのクエリが「データ量(N) + 1」発行され、データ量が多くなるにつれてパフォーマンスを低下させてしまう問題です。  
+1つのクエリでデータを取得する際に、その取得したデータに関連する別のデータを取得するために、複数の追加のクエリが発生することを指します。  
+例えばデータの数だけSELECT文を発行すると1回が1msでも、データの数が増えるとその数だけSELECT文を発行することになり、パフォーマンスが悪くなっていきます。
 
 では、N+1問題について具体的なコードを見ながら考えてみましょう。
 
@@ -25,19 +27,29 @@ Modelは `User` と `Favorite` のものがあったとします。
 | user_id | ユーザーID | integer |
 | title | タイトル | string |
 
-ユーザー(User)はたくさんのお気に入り(Favorite)を登録することができるという「1 対 多」の関連付をします。
+ユーザー(User)はたくさんのお気に入り(Favorite)を登録することができるという「1 対 多」の関連付をします。  
+アプリを作成しましょう。  
 
-`app/models/user.rb`
+```sh
+$ rails new favorite_app
+$ cd favorite_app
+$ rails g model User name:string
+$ rails g model Favorite user:references title:string
+$ rails db:migrate
+$ rails g controller Favorites index
+```
 
 ```ruby
+# app/models/user.rb
+
 class User < ApplicationRecord
   has_many :favorites
 end
 ```
 
-`app/models/favorite.rb`
-
 ```ruby
+# app/models/favorite.rb
+
 class Favorite < ApplicationRecord
   belongs_to :user
 end
@@ -46,16 +58,21 @@ end
 Controllerでは `Favorite` の一覧を取得するよう以下の内容になっているとします。
 
 ```ruby
-class Favorite < ApplicationController
+# app/controllers/favorites_controller.rb
+
+class FavoritesController < ApplicationController
   def index
     @favorites = Favorite.order(:id)
   end
 end
+
 ```
 
 `View` では取得したお気に入りに関連する `user` の名前を表示するとします。
 
-```ruby
+```html
+<!-- app/views/favorites/index.html.erb -->
+
 <h1>お気に入り一覧</h1>
   <% @favorites.each do |fav| %>
     <div><%= fav.user.name %></div>
@@ -64,7 +81,26 @@ end
 
 「お気に入り一覧を表示する」という機能的には問題なく満たしていますが、レコードを取得する際のデータベースへのアクセスに問題があります。
 
-ログを確認してみましょう。
+ログを確認してみましょう。  
+
+今回はseedを使ってデータを作成します。  
+初期データやテストデータを作成するときに使われます。  
+
+```rb
+# db/seeds.rb
+
+# 1つのユーザーを生成
+user = User.create(name: "test")
+
+# お気に入りを生成
+100.times do |n|
+  user.favorites.create(title: "お気に入り #{n + 1}")
+end
+```
+
+```sh
+$ rails s
+```
 
 **ログ**
 
@@ -114,7 +150,9 @@ Favorite Load (0.5ms)  SELECT "favorites".* FROM "favorites" ORDER BY "favorites
   CACHE User Load (0.0ms)  SELECT  "users".* FROM "users" WHERE "users"."id" = ? LIMIT ?  [["id", 2], ["LIMIT", 1]]
   CACHE User Load (0.0ms)  SELECT  "users".* FROM "users" WHERE "users"."id" = ? LIMIT ?  [["id", 2], ["LIMIT", 1]]
   CACHE User Load (0.0ms)  SELECT  "users".* FROM "users" WHERE "users"."id" = ? LIMIT ?  [["id", 2], ["LIMIT", 1]]
-  ...
+  ・
+  ・
+  ・
   ```
 
 ### 4.6.2 「N+1問題」解消方法
@@ -199,6 +237,28 @@ Favorite Load (0.2ms)  SELECT "favorites".* FROM "favorites" INNER JOIN "users" 
 ```
 
 ### 4.6.3 サブクエリの作り方
+
+サブクエリとは、SQLクエリの中に含まれるクエリです。つまり、クエリの中で別のクエリが実行され、その結果が親クエリの条件や操作に利用されます。  
+
+サブクエリは以下のような場面で利用されます。
+
+1. 条件の絞り込み：サブクエリを使って特定の条件を満たす行のみを取得します。
+2. 集計：サブクエリを使って集計関数を利用し、集計結果を取得します。
+3. 結合条件：サブクエリを使って別のテーブルからデータを取得し、それを元に結合条件を指定します。
+
+```sql
+SELECT name 
+FROM users 
+WHERE id IN (
+    SELECT user_id 
+    FROM orders 
+    WHERE total_amount > 1000
+);
+```
+
+このクエリでは、ordersテーブルからtotal_amountが1000を超える注文のuser_idをサブクエリで取得し、それを使ってusersテーブルから該当するユーザーのnameを取得しています。
+
+サブクエリを使うことで、複雑な条件やデータの取得を行うことができ、柔軟性が向上します。
 
 Userテーブルから抽出する場合
 

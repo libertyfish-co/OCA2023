@@ -25,45 +25,114 @@ MakerType : メーカー車種 テーブル
 |maker_id|メーカ名|references|
 |type_id|車種名|references|
 
+##### Railsアプリの作成
+```sh
+$ rails new car_app
+$ cd car_app
+$ rails g scaffold Maker name:string
+$ rails g scaffold Type name:string
+$ rails g scaffold MakerType maker:references type:references
+$ rails db:migrate
+```
+
+モデルの関連付けをします。  
+```rb
+# app/models/maker.rb
+
+class Maker < ApplicationRecord
+  has_many :maker_types
+  has_many :types, through: :maker_types
+end
+```
+```rb
+# app/models/type.rb
+
+class Type < ApplicationRecord
+  has_many :maker_types
+  has_many :makers, through: :maker_types
+end
+```
+
 Makerテーブルの登録・編集で、MakerTypeテーブルも一緒に編集できるようにしていきます。変更箇所は以下の3点です。
 
 ##### formへのチェックボックス追加
 
 `collection_check_boxes` は、erbタグ1行だけで必要な数のチェックボックスを並べてくれます。第1引数は参照する親テーブル名、第2引数は中間テーブル名に `_ids` をつけたものを使用します。第3引数以降は通常のチェックボックスと同じですので説明は省略します。
 
-`app/views/makers/_form.html.erb`
-```
-    <div class="fields">
-      <%= form.collection_check_boxes :type_ids, Type.all, :id, :name %>
-    </div>
+```html
+<!-- app/views/makers/_form.html.erb -->
+  ・
+  ・
+  <div>
+    <%= form.label :name, style: "display: block" %>
+    <%= form.text_field :name %>
+  </div>
+
+  <!-- ここから追加 -->
+  <div class="fields">
+    <%= form.collection_check_boxes :type_ids, Type.all, :id, :name %>
+  </div>
+  <!-- ここまで追加 -->
+
+  <div>
+    <%= form.submit %>
+  </div>
+<% end %>
 ```
 この `*_ids` は、ActiveRecordの `collection_singular_ids` と呼ばれるもので、リレーションの関係があるテーブル間で使用できます。例えば、上の例では `Maker.first.type_ids` のように、Typeテーブルのidをまとめて取得することもできます。  
 
-    [*] pry(main)> Maker.first.type_ids
-    => [1, 2]
+`rails c`で確認してみましょう。
+
+```sh
+  [*] pry(main)> Maker.first.type_ids
+  => [1, 2]
+```
 
 ##### Controllerの修正
 
 次はControllerの修正です。フィールドを追加しましたので、ストロングパラメータに追加しておきます。このとき、 `collection_check_boxes` は、チェックボックスの値が配列としてparamsに追加されるので注意してください。中間テーブル用のsaveなどは追加しなくても、type_idsが自動的にデータをcreate/editしてくれます。
 
-`app/controllers/makers_controller.rb`
-```
-    def maker_params
-      params.require(:maker).permit(:name, type_ids: [])
-    end
+```rb
+# app/controllers/makers_controller.rb
+  ・
+  ・
+  def maker_params
+    params.require(:maker).permit(:name, type_ids: []) # 編集
+  end
+end
 ```
 
 ##### showへの表示追加
 
 最後に、登録した中間テーブルのデータを表示しましょう。ここではシンプルに車種名を並べておきます。
 
-`app/views/makers/show.html.erb`
+```html
+<!-- app/views/makers/show.html.erb -->
+
+<p style="color: green"><%= notice %></p>
+
+<%= render @maker %>
+
+<!-- ここから追加 -->
+<p>
+  <strong>タグ</strong>
+  <%= @maker.types.map(&:name).join(', ') %>
+</p>
+<!-- ここまで追加 -->
+
+<div>
+  <%= link_to "Edit this maker", edit_maker_path(@maker) %> |
+  <%= link_to "Back to makers", makers_path %>
+
+  <%= button_to "Destroy this maker", @maker, method: :delete %>
+</div>
 ```
-    <p>
-      <strong>タグ</strong>
-      <%= @maker.types.map(&:name).join(', ') %>
-    </p>
-```
+
+以下のようになっていれば正しく実装できています。  
+![画像](images/08-3-1.png)
+![画像](images/08-3-2.png)
+
+実装できれば、[Railsドキュメント](https://railsdoc.com/page/collection_check_boxes)などを見ながらオプションや[collection_select](https://railsdoc.com/page/collection_select)などを試してみてください。  
 
 #### (c) 問題
 
