@@ -69,3 +69,27 @@ confirmations/  mailer/  passwords/  registrations/  sessions/  shared/  unlocks
 今まで英語で表示されていた`Log in`が日本語で`ログイン`と表示されました。
 
 このようにDeviseが提供している画面を修正するには`devise:views`のジェネレータを使ってviewファイルを作成し、そのファイルを修正します。
+
+
+
+__【問題】__  
+新しくアプリを作成しましょう。その際、`Devise`を使ってユーザー認証をしましょう。  
+また以下の通りにアプリを作成してください。  
+- `Devise`を使って`User`モデルを作成する
+- `User`モデル作成時に`email`、`password`のほかにユーザー名(`name`カラム)も追加する
+- ログイン時は`email`ではなく`name`カラムと`password`を参照してログインする
+- top画面、my_page画面の作成(モデル不要)
+- サインアップ、ログイン後はmy_pageへ遷移する
+- ログインしているユーザーのみmy_page画面へ遷移できる
+- ログアウト後はtop画面へ遷移する
+- ログインしていないユーザーはtop画面へ遷移する
+- my_pageにはログインしているユーザーの名前を表示する
+
+__【ヒント】__  
+- config/initializers/devise.rbを変更する
+```rb
+# # config/initializers/devise.rb
+
+config.authentication_keys = [:email]
+```
+- app/controllers/users/sessions_controller.rbを変更する

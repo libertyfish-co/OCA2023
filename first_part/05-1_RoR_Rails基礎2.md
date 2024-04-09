@@ -12,7 +12,7 @@
         ページの動きを制御するjs等が格納される  
 
    - **controllers**  
-        ユーザアクションを基にアプリを制御するcontrollerが格納される  
+        ユーザーアクションを基にアプリを制御するcontrollerが格納される  
         MVCの"C"  
 
    - **helpers**  
