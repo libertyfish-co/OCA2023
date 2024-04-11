@@ -19,15 +19,16 @@
 
 テストコードを記述する `products_spec.rb` を作成します。
 
-```bash
+```sh
 touch spec/system/products_spec.rb
 ```
 
 それから、今回のテストで使用するテストデータをFactoryBotに用意しておきます。
 
-`spec/factories/books.rb`
 
-```ruby
+```rb
+# spec/factories/books.rb
+
 FactoryBot.define do
   factory :book do
     title { "テスト用本" }
@@ -45,9 +46,10 @@ end
 
 まずは、商品詳細画面とそのテストから記述します。
 
-`app/views/products/show.html.erb`
 
-```ruby
+```html
+<!-- app/views/products/show.html.erb -->
+
 <h2 class="sub-header">商品詳細画面</h2>
 
 <p id="notice"><%= notice %></p>
@@ -82,9 +84,10 @@ end
 
 ```
 
-`app/views/orders/new.html.erb`
 
-```ruby
+```html
+<!-- app/views/orders/new.html.erb -->
+
 <%= form_with(model: @order, local: true, url: confirm_orders_path) do |f| %>
   <% if @order.errors.any? %>
     <div id="error_explanation">
@@ -124,9 +127,10 @@ end
 <% end %>
 ```
 
-`spec/system/products_spec.rb`
 
-```ruby
+```rb
+# spec/system/products_spec.rb
+
 require 'rails_helper'
 
 RSpec.describe "Products", type: :system do
@@ -146,9 +150,10 @@ end
 
 続いて、購入確定ボタンをクリックすると、購入完了画面が表示されるテストを記述します。
 
-`app/controllers/orders_controller.rb`
 
-```ruby
+```rb
+# app/controllers/orders_controller.rb
+
 class OrdersController < ApplicationController
   def create
     @order = Order.new(order_params)
@@ -171,9 +176,10 @@ class OrdersController < ApplicationController
 end
 ```
 
-`spec/system/products_spec.rb`
 
-```ruby
+```rb
+# spec/system/products_spec.rb
+
 require 'rails_helper'
 
 RSpec.describe "Products", type: :system do

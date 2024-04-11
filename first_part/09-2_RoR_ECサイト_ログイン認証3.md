@@ -85,11 +85,9 @@ __【問題】__
 - ログインしていないユーザーはtop画面へ遷移する
 - my_pageにはログインしているユーザーの名前を表示する
 
+
+
+
 __【ヒント】__  
 - config/initializers/devise.rbを変更する
-```rb
-# # config/initializers/devise.rb
-
-config.authentication_keys = [:email]
-```
 - app/controllers/users/sessions_controller.rbを変更する
