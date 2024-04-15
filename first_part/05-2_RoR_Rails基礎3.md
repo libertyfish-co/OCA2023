@@ -7,6 +7,7 @@ __【users_controller.rb】__
 この中身を確認してみましょう。  
 
 ```rb
+# app/controllers/users_controller.rb
 class UsersController < ApplicationController
   before_action :set_user, only: %i[ show edit update destroy ]
 
@@ -94,16 +95,20 @@ usersテーブルのレコードを全て取ってきてインスタンス変数
 同じController内のアクションメソッドから表示されるViewでも参照が出来るようになるからです。
 
 以上をまとめると、呼び出されたindexメソッドでは、  
-「`/views/users/index.html.erb`をusersテーブルのレコードを全て取ってきた結果を渡した状態で表示する」  
+「`/views/users/index.html.erb`はusersテーブルのレコードを全て取ってきた結果を渡した状態で表示する」  
 という処理を行っていることになります。  
 <br>
 
 他にも、Controllerにはいくつか特徴があります。  
 
-【Controllerの定義】
+__【Controllerの定義】__  
 
+先ほどの`UsersController`を確認してみましょう。
 確認してみると、Controllerはクラスとして定義されていることが分かります。  
 更に、`ApplicationController`というクラスを継承していることも分かります。  
+```rb
+class UsersController < ApplicationController
+```
 この`ApplicationController`は、あらかじめController用に用意されているクラスで、  
 Controller全体で共通の処理等を書いておく場所になっています。
 この辺りは、前に述べたDRYの理念に則った構造と言えるでしょう。  
@@ -112,26 +117,72 @@ Controller全体で共通の処理等を書いておく場所になっていま�
 実はこの`ActionController::Base`を継承していることが、Controllerとして認識される条件になっています。  
 なので、Controllerクラスを定義する際には、直接`ActionController::Base`を継承するか、  
 `ApplicationController`のような、継承しているクラスを更に継承する必要があります。  
+<br>
 
-【StrongParameter】
+__【StrongParameter】__   
 
-StrongParameterとは、画面上の操作で送られてきたデータを安全に受け取る仕組みです。
-Railsに標準的に組み込まれていて、アプリの作成者が意図していない値を受け取らないように、  
+StrongParameter(ストロングパラメータ)は、Railsで使用されるセキュリティ機能の一つです。画面上の操作で送られてきたデータを安全に受け取る仕組みです。  
+StrongParameterを使うことで、どのパラメータが許可されているかを明示的に指定することができ、アプリの作成者が意図していない値を受け取らないように、  
 アプリのプログラム内で受け取ることのできる値に制限を設けます。  
 上記のController内であれば、以下の部分が該当します。  
 ```rb
+# app/controllers/users_controller.rb
+
+private
+・
+・
+・
 def user_params
   params.require(:user).permit(:name, :email)
 end
 ```
 この`permit`メソッドで指定された値のみが扱えるようになります。  
 scaffoldで生成した場合はこのように自動で追加してくれますが、  
-自分で何か追加した時にはpermitメソッドを使用して指定しなくてはいけません。  
+自分で何か追加した時にはpermitメソッドを使用して指定しなくてはいけません。 
+
+このStrongParameterは`private`メソッドというところに定義します。  
+`private`メソッドはそのクラスのインスタンスからのみ呼び出すことができます。  
+同じクラスからのみアクセスができ、外部からはアクセスができないようになっています。  
+このように`private`メソッドを使用することでクラス内部の処理を隠蔽し、安全性と抽象化を高めることができます。
+
+実際にどのように使われているか確認してみましょう。　　
+```rb
+# app/controllers/users_controller.rb
+
+def create
+  @user = User.new(user_params)
+
+  respond_to do |format|
+    if @user.save
+      format.html { redirect_to user_url(@user), notice: "User was successfully created." }
+      format.json { render :show, status: :created, location: @user }
+    else
+      format.html { render :new, status: :unprocessable_entity }
+      format.json { render json: @user.errors, status: :unprocessable_entity }
+    end
+  end
+end
+```
+
+`@user = User.new(user_params)`ではStrongParameterを使用しています。  
+StrongParameterを使用しない場合は以下のように定義できます。
+```rb
+# app/controllers/users_controller.rb
+
+@user = User.new(params[:users])
+```
+このコードは、`params[:user]`に含まれるすべての属性を一括でUserモデルに反映させます。  
+しかし、意図しないパラメータが送られてきた場合に本来登録するべきではないものも登録されてしまう可能性があります。  
+
+`params.require(:user).permit(:name, :email)`を使って、`user`キーの中の`name`と`email`のみを許可します。  
+これにより、他の不正なパラメータが受け入れられなくなります。
 <br>
 
-__【/views/users/index.html.erb】__  
+__【Viewファイル】__  
 今度は実際に表示されているViewファイルの中身を見てみましょう。  
 ```html
+<!-- app/views/users/index.html.erb -->
+
 <p style="color: green"><%= notice %></p>
 
 <h1>Users</h1>
@@ -146,12 +197,13 @@ __【/views/users/index.html.erb】__
 </div>
 
 <%= link_to "New user", new_user_path %>
-
 ```
 HTMLの知識がある人なら、このファイルを見た時違和感があったと思います。  
 上記のファイルには、通常のHTMLの構造でいうbodyの部分しか書かれていません。  
 それ以外の部分はどこに書かれているかというと、`/views/layouts/application.html.erb`というファイルに書かれています。  
 ```html
+<!-- app/views/layouts/application.html.erb -->
+
 <!DOCTYPE html>
 <html>
   <head>
@@ -170,14 +222,22 @@ HTMLの知識がある人なら、このファイルを見た時違和感があ�
 </html>
 ```
 表示される時にはこの二つが組み合わさって表示されます。  
+`application.html.erb`の中に`<%= yield %>`というRailsで特殊なタグがあります。  
+`<%= yield %>`は、レイアウトファイル（通常は`app/views/layouts/application.html.erb`）内に置かれています。  
+Railsでは、このレイアウトファイルは全てのビューファイルに適用される共通の構造を定義するために使用されます。  
+`<%= yield %>`は、ビューファイルの特定の位置にレイアウトファイル内のコンテンツを挿入するために使用されます。  
+`<%= yield %>`は`<body>`タグ内に置かれています。  
+そのため、`app/views/users/index.html.erb`で`<%= yield %>`が呼び出されると、そのビューファイル内のコンテンツが`<body>`タグ内に挿入されます。  
 
-またこれらのViewファイルには、`<%= %>`や`<% %>`を使うことでHTMLの中にRubyのコードが書けるようになっています。  
+またこれらのViewファイルには、`<%= yield %>`のように`<%= %>`や`<% %>`を使うことでHTMLの中にRubyのコードが書けるようになっています。  
 これを利用して、Rubyの繰り返し文を使ってHTMLの要素を生成する事も出来ます。  
 <br>
 
-__【user.rb】__  
+__【Model】__  
 最後に、データの取得や登録時にはModelが使用されているのでそちらを確認してみましょう。  
 ```rb
+# app/models/user.rb
+
 class User < ApplicationRecord
 end
 ```
@@ -193,15 +253,20 @@ Modelにはいくつか特徴的な機能があります。
 制限をかける時には`バリデーション`という機能が使用されます。  
 実際にバリデーションを使用して、上記の処理が出来るようにしてみましょう。  
 ```rb
+# app/models/user.rb
+
 class User < ApplicationRecord
   validates :name, presence: true
 end
 ```
-これで、画面上から登録する時に、名前が空白だと登録が出来ずに警告が出るようになっているはずです。  
+`presence: true`とすることで、画面上から登録する時に、名前が空白だと登録が出来ずに警告が出るようになっているはずです。  
 
 また、もしメールアドレスをログインのID代わりにするなら、二つ同じものがあっては困ります。  
-そういう時には以下のようにしてみましょう。  
+そういう時には`uniqueness: true`を使用します。  
+以下のようにしてみましょう。  
 ```rb
+# app/models/user.rb
+
 class User < ApplicationRecord
   validates :name, presence: true
   validates :email, uniqueness: true

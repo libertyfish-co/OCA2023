@@ -6,25 +6,15 @@ ImageMagickは、画像のリサイズや画像フォーマットの変換、画
 
 ### 9.6.1 画像のリサイズ
 
-#### ImageMagickをインストール
-
-ここでは、ImageMagickをインストールする手順を説明します。
-
-様々な環境でのImageMagickのインストール手順は、`https://imagemagick.org/script/download.php`を参考にしてください。
-
-```
-$ sudo apt install imagemagick
-```
-
 #### gemの追加
 
-`Gemfile`に`gem 'image_processing'を追加しましょう。コメントになっている場合は、コメントを外しましょう。
+`Gemfile`に`gem 'image_processing'`を追加しましょう。コメントになっている場合は、コメントを外しましょう。
 
 `ImageProcessing`は画像サイズを調整する機能を持つ`gem`です。
 
 `Gemfile`の変更ができたら、`bundle install`を実行しましょう。
 
-```bash
+```sh
 $ bundle install
 ```
 
@@ -35,14 +25,13 @@ $ bundle install
     Active Storageでは、アップロードされた画像はそのまま保存し、表示する時にリサイズをします。
     画像の大きさを縦横300x300ピクセルに収まる画像として表示するようにモデルにメソッドを追加します。
 
-    `app/models/user.rb`
-
-    ```ruby
+    ```rb
+    # app/models/user.rb
     class User < ApplicationRecord
       has_one_attached :photo
 
       def thumbnail
-        photo.variant(resize: '300x300')
+        photo.variant(resize_to_fill: [300, 300])
       end
     end
     ```
@@ -54,10 +43,10 @@ $ bundle install
     追加したリサイズのメソッドを利用して画像を表示するようビューを修正します。
     ここでは、元の画像と比較できるように、`@user.thumbnail`を利用して表示できるように処理を追加しましょう。
 
-    `app/views/users/show.html.erb`
-
-    ```ruby
-    (省略)
+    ```html
+    <!-- app/views/users/show.html.erb -->
+    ・
+    ・
     <p>
       <strong>Photo:</strong>
       <% if @user.photo.attached? %>
@@ -65,7 +54,8 @@ $ bundle install
         <%= image_tag @user.thumbnail %>
       <% end %>
     </p>
-    (省略)
+    ・
+    ・
     ```
 
  2. ブラウザで`show`をクリックして画像を確認します。
@@ -78,9 +68,9 @@ $ bundle install
 
     まずは、アップロードされる画像に対してのバリデーション条件を記述しましょう。
 
-    `app/models/user.rb`
-
-    ```ruby
+    ```rb
+    # app/models/user.rb
+    
     class User < ApplicationRecord
       has_one_attached :photo
 
@@ -98,7 +88,7 @@ $ bundle install
       end
 
       def thumbnail
-        photo.variant(resize: '300x300')
+        photo.variant(resize_to_fill: [300, 300])
       end
 
       private
@@ -118,56 +108,70 @@ $ bundle install
 
     `Gemfile`にRSpecに必要な`gem`を追加します。
 
-    ```ruby
+    ```rb
+    # Gemfile
+    ・
+    ・
     group :development, :test do
       # Use RSpec
       gem 'rspec-rails', '~> 4.0.1'
       # Use FactoryBot
       gem 'factory_bot_rails'
     end
+    ・
+    ・
     ```
 
     `bundle install`も忘れずに実行します。
 
-    ```bash
+    ```sh
     $ bundle install
     ```
 
     `RSpec`のインストールも忘れずに実行します。
-    ```bash
-    $ rails generate rspec:install
+    ```sh
+    $ rails g rspec:install
     ```
 
     `config/application.rb`に`RSpec`を利用する設定を記述します。
-    ```ruby
-      module Storage
-        class Application < Rails::Application
-          # Don't generate system test files.
-          config.generators.system_tests = nil
-        end
+    ```rb
+    # config/application.rb
+    ・
+    ・
+    module Storage
+      class Application < Rails::Application
+        ・
+        ・
+        # Don't generate system test files.
+        config.generators.system_tests = nil
       end
+    end
     ```
 
     `config/initializers/generators.rb`を新規作成して、以下の内容を記述します。
-    ```ruby
-      Rails.application.config.generators do |g|
-        g.test_framework :rspec
-        g.view_specs false
-        g.routing_specs false
-        g.helper_specs false
-        g.fixture_replacement :factory_bot, dir: 'spec/factories'
-      end
+    ```rb
+    # config/initializers/generators.rb
+
+    Rails.application.config.generators do |g|
+      g.test_framework :rspec
+      g.view_specs false
+      g.routing_specs false
+      g.helper_specs false
+      g.fixture_replacement :factory_bot, dir: 'spec/factories'
+    end
     ```
 
     Userモデルに対するspecファイルを作成します。
 
-    ```
-    $ rails generate rspec:model user
+    ```sh
+    $ rails g rspec:model user
     ```
 
     `spec/models/user_spec.rb`にテストを記述します。
 
-    ```ruby
+    ```rb
+    # spec/models/user_spec.rb
+
     require 'rails_helper'
 
     RSpec.describe User, type: :model do
@@ -200,7 +204,8 @@ $ bundle install
     end
     ```
 
-    テストに必要なファイルを準備します。
+    テストに必要なファイルを準備します。  
+    `spec/fixtures`に以下のファイルを格納してください。
 
     ```
     spec/fixtures/photo.jpg (ファイルサイズが2MB以下のJPEG形式画像)
@@ -211,7 +216,7 @@ $ bundle install
 
     テストを実行します。
 
-    ```
+    ```sh
     $ bundle exec rspec spec/models/user_spec.rb
     2019-11-20 13:45:56 WARN Selenium [DEPRECATION] Selenium::WebDriver::Chrome#driver_path= is deprecated.
     Use Selenium::WebDriver::Chrome::Service#driver_path= instead.
@@ -224,11 +229,12 @@ $ bundle install
 
     今度は、ファイルサイズの制限をlarge-photo.jpgの画像のファイルサイズより大きく(例:10MB)、また、受け入れ可能な画像形式に`image/png`を追加してみましょう。
 
-    `app/models/user.rb`
+    ```rb
+    # app/models/user.rb
 
-    ```ruby
     class User < ApplicationRecord
-      (省略)
+      ・
+      ・
       def validate_photo
         return unless photo.attached?
         if photo.blob.byte_size > 10.megabytes
@@ -248,7 +254,7 @@ $ bundle install
 
     テストを実行します。
 
-    ```
+    ```sh
     $ bundle exec rspec spec/models/user_spec.rb
     2019-11-20 13:49:43 WARN Selenium [DEPRECATION] Selenium::WebDriver::Chrome#driver_path= is deprecated.
     Use Selenium::WebDriver::Chrome::Service#driver_path= instead.
@@ -277,3 +283,24 @@ $ bundle install
     rspec ./spec/models/user_spec.rb:22 # User is invalid to large file
     ```
     と、2件のエラーが検出されると期待通りの動作です。ですが、コードのバランスがとれていませんので、修正した箇所は、元に戻してもかまいませんし、`app/models/user.rb`の変更をそのままにするのであれば、テストが正常に終了するように`spec/models/user_spec.rb`を修正しておきましょう。
+
+
+__【問題】__  
+新しく`photo_post`アプリを以下の条件で作成してください。  
+- `User`モデルと`Post`モデルを実装してください。
+- `User`モデルでは名前(20文字以内)、アイコン画像を設定できます。
+- `Post`モデルではタイトル(20文字以内)、投稿内容(200文字以内)、画像の投稿ができます。
+- ユーザーを新規作成するときはアイコンを設定できます。
+- ユーザーはログイン後にマイページへ遷移します。
+- ユーザーはマイページでは以下画面へ遷移するボタンもしくはボタンがあります。
+    - 投稿一覧画面
+    - ユーザー編集画面
+    - ログアウトボタン
+- ユーザー編集画面では以下の変更ができます。
+    - 名前の変更
+    - アイコンの変更
+- 新規投稿ページはタイトル、投稿内容、画像が入力できます。(今回はユーザーと投稿を紐づける必要はありません)
+- 新規投稿後は投稿一覧ページへ遷移します。
+- 一覧ページの画像のサイズは300x300にしてください。
+- 一覧ページから投稿のタイトルを押下すると該当の投稿詳細ページへ遷移します。
+- 詳細ページの画像のサイズは600x600にしてください。
