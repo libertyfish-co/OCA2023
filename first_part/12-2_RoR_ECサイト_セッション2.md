@@ -20,12 +20,21 @@ FavoriteモデルとCheckItemモデルの関係性は下の図のようになり
 
 - - -
 
-###### Favoriteテーブルの追加
+###### アプリの作成
 
-セッションIDを管理するためだけのテーブルですので、id (integer) のみを用意します。
+練習用のアプリを作成しましょう。
 
+```sh
+$ rails new session_practice
+$ cd session_practice
 ```
-$ rails generate scaffold Favorite
+
+ProductテーブルとFavoriteテーブルの追加をします。  
+FavoriteテーブルはセッションIDを管理するためだけのテーブルですので、id (integer) のみを用意します。
+
+```sh
+$ rails g scaffold Product name:string description:string price:integer 
+$ rails g scaffold Favorite
 ```
 
 _ _ _
@@ -34,24 +43,39 @@ _ _ _
 
 CheckItemテーブルは中間テーブルの位置づけですので、FavoriteテーブルとProductテーブルのidをreferencesにしておきましょう。
 
-```
-$ rails generate scaffold CheckItem product:references favorite:references
+```sh
+$ rails g scaffold CheckItem product:references favorite:references
 ```
 
 Favoriteテーブル・CheckItemテーブルの作成をデータベースに反映しましょう。
 
-```
+```sh
 $ rails db:migrate
 ```
 
 _ _ _
 
 ###### モデルの関連付け
+モデルの関連付けをする前に今回使うパスを設定しましょう
+
+```rb
+# config/routes.rb
+
+Rails.application.routes.draw do
+  resources :check_items, only: [:create]
+  resources :favorites
+  resources :products
+  ・
+  ・
+  ・
+end
+```
 
 Favorite、CheckItem、Productモデルの関連付けを行い、Favorite削除時は同時にCheckItemの削除を行えるようにしておきましょう。
 
-`app/models/favorite.rb`
-```
+```rb
+# app/models/favorite.rb
+
 class Favorite < ApplicationRecord
   has_many :check_items, dependent: :destroy
 end
@@ -59,15 +83,17 @@ end
 
 `dependent: :destroy`オプションを追加することで、favoriteレコードをdestroyメソッドで削除したとき、そのfavoriteに紐づいていたcheck_itemをRailsが全て削除してくれます。
 
-`app/models/product.rb`
-```
+```rb
+# app/models/product.rb
+
 class Product < ApplicationRecord
   has_many :check_items
 end
 ```
 
-`app/models/check_item.rb`
-```
+```rb
+# app/models/check_item.rb
+
 class CheckItem < ApplicationRecord
   belongs_to :product
   belongs_to :favorite
@@ -76,19 +102,19 @@ end
 
 ##### b-2) セッション登録機能の追加
 
-現在のFavorite（お気に入り）を取得する処理をcurrent_favoriteメソッドに実装します。処理の流れは以下のとおりです。共通コントローラであるApplicationControllerに作成しましょう。
+現在のFavorite(お気に入り)を取得する処理をcurrent_favoriteメソッドに実装します。処理の流れは以下のとおりです。共通コントローラであるApplicationControllerに作成しましょう。
 
- 1. セッションから取得したfavorite_idを元にFavoriteテーブルからお気に入り情報を取得（存在しない場合、Favorite作成）
- 2. 取得したFavorite情報よりIDを取得し、セッションに設定
- 3. Favorite情報を返却
+  1. セッションから取得したfavorite_idを元にFavoriteテーブルからお気に入り情報を取得（存在しない場合、Favorite作成）
+  2. 取得したFavorite情報よりIDを取得し、セッションに設定
+  3. Favorite情報を返却
 
-`app/controller/application_controller.rb`
-```
+```rb
+# app/controller/application_controller.rb
+
 class ApplicationController < ActionController::Base
-
-  (省略)
-
-private
+  ・
+  ・
+  private
 
   def current_favorite
     favorite = Favorite.find_or_create_by(id: session[:favorite_id])
@@ -105,8 +131,9 @@ end
 FavoriteモデルにCheckItemを登録するadd_productを実装しましょう。  
 商品が既にあれば取得、なければ新規でCheckItemオブジェクトを生成し、CheckItemオブジェクトを返してください。
 
-`app/models/favorite.rb`
-```
+```rb
+# app/models/favorite.rb
+
 class Favorite < ApplicationRecord
   has_many :check_items, dependent: :destroy
 
@@ -119,13 +146,11 @@ end
 セッションからFavorite情報を取得し、check_itemsコントローラにお気に入りの商品を登録できるようにcreateメソッドを実装しましょう。  
 FavoriteとProductを取得し、CheckItemを追加してトップ画面へ遷移させてください。
 
-`app/controllers/check_items_controller.rb`
-```
-class CheckItemsController < ApplicationController
-  (省略)
+```rb
+# app/controllers/check_items_controller.rb
 
-  # POST /check_items
-  # POST /check_items.json
+class CheckItemsController < ApplicationController
+  # POST /check_items or /check_items.json
   def create
     favorite = current_favorite
     product  = Product.find(params[:product_id])
@@ -133,7 +158,7 @@ class CheckItemsController < ApplicationController
 
     respond_to do |format|
       if @check_item.save
-        format.html { redirect_to root }
+        format.html { redirect_to products_path }
         format.json { render :show, status: :created, location: @check_item }
       else
         format.html { redirect_to products_index_url,
@@ -143,16 +168,14 @@ class CheckItemsController < ApplicationController
       end
     end
   end
-
-  (省略)
 end
 ```
 
 最後にトップ画面へ「お気に入り」ボタンとお気に入り表示を設置しましょう。お気に入りに入っているかどうかの判定は、ヘルパーメソッドとして実装します。
 
-`app/helpers/products_helper.rb`
-変更後
-```
+```rb
+# app/helpers/products_helper.rb
+
 module ProductsHelper
   def current_favorite?(product, favorite)
     favorite.check_items.map{|i| i.product_id}.include?(product.id)
@@ -160,41 +183,39 @@ module ProductsHelper
 end
 ```
 
+```rb
+# app/controllers/products_controller.rb
 
-`app/controllers/products_controller.rb`
-変更後
-```
 def index
-  （省略）
+  ・
+  ・
   @favorite = current_favorite #追加
 end
 ```
 
 
-`app/views/products/index.html.erb`
-変更後
-```
-  (省略)
+```html
+<!-- app/views/products/index.html.erb -->
 
 <div class="row marketing">
-  <h2>BOOK</h2>
+  <h2>Products</h2>
   <div class="col-lg-12">
-    <% @books.each do |book| %>
-      <h3><%= book.title %></h3>
-      <p><%= book.author %></p>
-      <p><%= book.published_on %></p>
+    <% @products.each do |product| %>
+      <h3><%= product.name %></h3>
+      <p><%= product.description %></p>
+      <p><%= product.price %></p>
       <p>
-        <%= number_to_currency(book.try(:price), precision: 0, unit: "円") %>
-        <% if current_favorite?(book, @favorite) %>
-            <%= '☆' %>
+        <%= number_to_currency(product.try(:price), precision: 0, unit: "円", format: "%n%u") %>
+        <% if current_favorite?(product, @favorite) %>
+            <%= '★' %>
         <% else %>
-          <%= link_to 'お気に入り', check_items_path(product_id: book.id),
-              method: :post, class: 'btn btn-default' %>
+          <%= link_to 'お気に入り', check_items_path(product_id: product.id),
+              data: {"turbo-method": :post}, class: 'btn btn-default' %>
         <% end %>
-        <%= link_to '購入', new_order_path(product_id: book.id),
-            class: 'btn btn-default' %>
+        <%= link_to "Show this product", product %>
       </p>
     <% end %>
+    <%= link_to "New product", new_product_path %>
   </div>
 </div>
 ```
