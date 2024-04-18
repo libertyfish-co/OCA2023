@@ -86,7 +86,7 @@
 上記の例では、直接SQL文を組み立てていませんが、直接組み立てる場合は検索条件に入力される条件によっては全く予期しないSQL文になる場合があります。
 
 例えば、nameの欄に`' or 1=1'`と入力して、`search`ボタンをクリックすると、Railsのログには
-```
+```sh
 Started GET "/customers?utf8=%E2%9C%93&name=%27+or+1%3D1%27&age=&commit=Search" for 127.0.0.1 at 2019-11-16 12:03:12 +0900
 Processing by CustomersController#index as HTML
   (略)
@@ -97,11 +97,11 @@ Completed 200 OK in 54ms (Views: 51.5ms | ActiveRecord: 0.2ms)
 のように実行結果が表示されます。nameに対する検索条件が`(`と`)`でくくられ、入力した条件がそのまま文字列として検索条件になるように`' or 1=1'`が`'' or 1=1''`と置換され、SQLで文字列や時刻の値をくくるための記号`'`が`''`に置換され、無害な文字列`'`と解釈されるようになります。
 
 考え方の一例ですが、SQL文を組み立てる場合に、`name like '%' + 条件 + '%'`のように記述して、検索すると
-```
+```sql
 SELECT customers.* FROM customers WHERE name like '%' or 1=1;
 ```
 と、nameに対する条件以外に、or 1=1など、常に条件が成立するSQL文が含まれ、本来は表示できてはいけないデータが表示されることも考えられますので、Railsでは、
-```
+```rb
 @customers.where("name like ?", "%#{params[:name]}%")
 ```
 のように記述するようにしましょう。

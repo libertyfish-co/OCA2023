@@ -146,7 +146,6 @@ $ rails db:seed
 <br>
 
 <%= link_to 'New Customer', new_customer_path %>
-
 ```
 
 ここでは、検索フォームは`form_with`を使用して作成します。
