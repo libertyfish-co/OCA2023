@@ -4,8 +4,9 @@
 
 貸出中（`rented`）、書庫（`stack`）には、`0`と`1`がそれぞれ割り当てられるのでRSpecのテストで確認してみましょう。
 
-- `spec/models/book_spec.rb`
-```
+```rb
+#  spec/models/book_spec.rb
+
   require 'rails_helper'
 
   RSpec.describe Book, type: :model do
@@ -37,8 +38,9 @@
 
 また、検索クエリも状態名で実行できるようにメソッドが定義されます。RSpecを利用して動作を確認してみましょう。
 
-- `spec/factories/books.rb`
-```
+```rb
+# spec/factories/books.rb
+
   FactoryBot.define do
     factory :rented_book, class: Book do
       sequence(:title) do |n|
@@ -55,8 +57,9 @@
   end
 ```
 
-- `spec/models/book_spec.rb`
-```
+```rb
+# spec/models/book_spec.rb
+
   require 'rails_helper'
 
   RSpec.describe Book, type: :model do
@@ -81,7 +84,7 @@
 
 Railsアプリケーション開発を進めるにつれ、要件が変わっていくことはよくあります。本の貸出状態に予約済（`reserved`）を増やしてみましょう。`book.rb`は次のようになります。
 
-```
+```rb
   class Book < ApplicationRecord
     enum status: [:reserved, :rented, :stack]
   end
@@ -91,7 +94,7 @@ Railsアプリケーション開発を進めるにつれ、要件が変わって
 
 ここで既存の機能に影響がないか、RSpecテストを実行して確認してみましょう。
 
-```
+```sh
 $ rspec
 
 Book
@@ -193,7 +196,7 @@ clause expects the number of 'stack' book is 11
 
 追加する状態によらず、今まで提供してきた機能を崩さないためにはハッシュで状態を定義することが多いです。`book.rb`を次のように変更してテストを再度実行してみましょう。
 
-```
+```rb
   class Book < ApplicationRecord
     enum status: {rented: 0, stack: 1, reserved: 2}
   end

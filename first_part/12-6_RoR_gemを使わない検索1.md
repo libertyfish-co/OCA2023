@@ -9,7 +9,7 @@ Webアプリケーション開発では、検索機能を実装することが�
 
 プロジェクトの作成
 
-```
+```sh
 $ rails new search_sample
 ```
 
@@ -35,21 +35,24 @@ $ rails new search_sample
 
 Scaffoldを使って一覧画面を準備しましょう
 
-`$ rails g scaffold employee name age:integer`
-
-`$ rails g scaffold customer employee:references name age:integer`
+```sh
+$ rails g scaffold employee name age:integer
+$ rails g scaffold customer employee:references name age:integer
+```
 
 generatorで生成されたコードはその時点で一度コミットする癖を付けましょう。
 
 migrateします。
 
-`$ rails db:migrate`
+```sh
+$ rails db:migrate
+```
 
 リレーションの設定を行います。
 
-`app/models/employee.rb`
+```rb
+# app/models/employee.rb
 
-```
 class Employee < ApplicationRecord
   has_many :customers # 追加
 end
@@ -59,9 +62,9 @@ end
 
 db/seeds.rbに下記コードを追記しましょう
 
-`db/seeds.rb`
+```rb
+# db/seeds.rb
 
-```
 employee1 = Employee.create(name: '岸部一樹', age: 31)
 employee2 = Employee.create(name: '崎谷雄大', age: 25)
 employee3 = Employee.create(name: '北出小百合', age: 55)
@@ -79,7 +82,9 @@ employee3.customers.create(name: '片原昭夫', age: 29)
 
 サンプルデータを登録します。
 
-`rails db:seed`
+```sh
+$ rails db:seed
+```
 
 `app/models/customer.rb`はscaffoldでreferencesを指定したので自動生成されています。
 
@@ -88,9 +93,10 @@ employee3.customers.create(name: '片原昭夫', age: 29)
 
 また、検索結果をわかりやすくるために、担当者（Employee）の名前と年齢が表示されるようにしましょう。(2)
 
-`app/views/customers/index.html.erb`
 
-```
+```html
+<!-- app/views/customers/index.html.erb -->
+
 <p id="notice"><%= notice %></p>
 
 <h1>Customers</h1>
@@ -140,7 +146,6 @@ employee3.customers.create(name: '片原昭夫', age: 29)
 <br>
 
 <%= link_to 'New Customer', new_customer_path %>
-
 ```
 
 ここでは、検索フォームは`form_with`を使用して作成します。
