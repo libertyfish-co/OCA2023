@@ -29,7 +29,7 @@ gem 'ransack'
 ```
 
 インストール
-```bash
+```sh
 $ bundle install
 ```
 

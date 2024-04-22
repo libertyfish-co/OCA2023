@@ -253,7 +253,7 @@ $ mkdir spec/system
 
 テストコードを記述する `users_spec.rb` を作成します。
 
-```bash
+```sh
 $ touch spec/system/users_spec.rb
 ```
 

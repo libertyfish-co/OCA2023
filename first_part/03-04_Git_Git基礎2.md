@@ -7,7 +7,7 @@
   以前作成したFizzBuzzプログラムの内容を追加するためのブランチを作成してみましょう。  
   ブランチの作成と作業ブランチの切り替え（ワーキングディレクトリへの移動）は、以下のコマンドを使用して行います。  
 
-  ```bash
+  ```sh
   $ git branch call_fizzbuzz
   $ git checkout call_fizzbuzz
   ```
@@ -16,7 +16,7 @@
 
   また、以下のように１つのコマンドにまとめることも出来ます。  
 
-  ```bash
+  ```sh
   $ git checkout -b call_fizzbuzz
   ```
 
@@ -24,7 +24,7 @@
 
   `git branch`コマンドの引数を指定せずに実行すると、ブランチの一覧を表示することができます。現在のブランチは頭に * がついています。
 
-  ```bash
+  ```sh
   $ git branch
     * call_fizzbuzz
     master
@@ -43,7 +43,7 @@
 
 - ローカルリポジトリの作業ブランチへの変更を取り消す
 
-  ```bash
+  ```sh
   $ git checkout .
   ```
 
@@ -51,19 +51,19 @@
   `git checkout .`の場合は、作業ブランチで変更した内容をすべて取り消してはくれますが、新規追加したファイルは削除されません。  
   完全にもとに戻したい場合は別途削除する必要があります。
 
-  ```bash
+  ```sh
   $ git clean -df .
   ``` 
 
 - addの取り消し
 
-  ```bash
+  ```sh
   $ git reset HEAD .
   ```
 
 - commitの取り消し
 
-  ```bash
+  ```sh
   $ git reset [<mode>] [<commit>] .
   ```
   
@@ -74,7 +74,7 @@
 
 - リモートリポジトリにpushした内容を取り消す
 
-  ```bash
+  ```sh
   $ git revert [<commit>]
   $ git push
   ```

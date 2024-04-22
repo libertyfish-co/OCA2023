@@ -39,7 +39,7 @@ $ rails db:migrate
 $ rails g controller Favorites index
 ```
 
-```ruby
+```rb
 # app/models/user.rb
 
 class User < ApplicationRecord
@@ -47,7 +47,7 @@ class User < ApplicationRecord
 end
 ```
 
-```ruby
+```rb
 # app/models/favorite.rb
 
 class Favorite < ApplicationRecord
@@ -57,7 +57,7 @@ end
 
 Controllerでは `Favorite` の一覧を取得するよう以下の内容になっているとします。
 
-```ruby
+```rb
 # app/controllers/favorites_controller.rb
 
 class FavoritesController < ApplicationController
@@ -108,7 +108,7 @@ $ rails s
 これではレコードが増えれば増えるほどSQLのクエリが発行されてしまいパフォーマンスが非常に悪くなってしまいます。
 例えば1回のクエリにかかる時間が0.1ms前後だったとして、取得するレコードが何千何万とあった場合それだけ時間がかかってしまうということになります。これが「N+1問題」の実態です。
 
-```bash
+```sh
 Favorite Load (0.5ms)  SELECT "favorites".* FROM "favorites" ORDER BY "favorites"."id" ASC
   User Load (0.2ms)  SELECT  "users".* FROM "users" WHERE "users"."id" = ? LIMIT ?  [["id", 1], ["LIMIT", 1]]
   CACHE User Load (0.0ms)  SELECT  "users".* FROM "users" WHERE "users"."id" = ? LIMIT ?  [["id", 1], ["LIMIT", 1]]
@@ -164,7 +164,7 @@ Favorite Load (0.5ms)  SELECT "favorites".* FROM "favorites" ORDER BY "favorites
 
 引数には、Association先を指定します。
 
-```ruby
+```rb
 def index
   @favorites = Favorite.order(:id).includes(:user)
 end
@@ -173,27 +173,27 @@ end
 するとクエリの実行は2回で済みます。
 1回目でお気に入りを全件取得し、2回目で `user_id` を指定して紐づく `user` を取得しています。
 
-```bash
+```sh
 Favorite Load (1.0ms)  SELECT "favorites".* FROM "favorites" ORDER BY "favorites"."id" ASC
 User Load (0.1ms)  SELECT "users".* FROM "users" WHERE "users"."id" IN (1, 2, 3, 4, 5, 6, 7, 8, 9)
 ```
 
 #### (b) preloadを使用する
 
-```ruby
+```rb
 def index
   @favorites = Favorite.preload(:user).order(:id)
 end
 ```
 
-```bash
+```sh
 Favorite Load (11.2ms)  SELECT "favorites".* FROM "favorites" ORDER BY "favorites"."id" ASC
 User Load (0.3ms)  SELECT "users".* FROM "users" WHERE "users"."id" IN (1, 2, 3, 4, 5, 6, 7, 8, 9)
 ```
 
 #### (c) eager_loadを使用する
 
-```ruby
+```rb
 def index
   @favorites = Favorite.eager_load(:user).order(:id)
 end
@@ -226,13 +226,13 @@ SELECT
 joinsは、指定したAssociationを `INNER JOIN` します。
 これだけでは「N+1問題」の解消はできませんが、結合先のテーブルに対しての絞り込みが可能です。
 
-```ruby
+```rb
 def index
   @favorites = Favorite.joins(:user).where(users: {id: 1})
 end
 ```
 
-```bash
+```sh
 Favorite Load (0.2ms)  SELECT "favorites".* FROM "favorites" INNER JOIN "users" ON "users"."id" = "favorites"."user_id" WHERE "users"."id" = ?  [["id", 1]]
 ```
 
@@ -289,19 +289,19 @@ railsでuserテーブルから1度に複数のデータを取得する場合を�
 
 配列で指定する
 
-```ruby
+```rb
 User.where(id: [1, 2, 3])
 ```
 
 `ids`メソッドを使用し同じことができます
 
-```ruby
+```rb
 User.where(id: User.ids)
 ```
 
 どのようなSQLクエリが実行されているのか`to_sql`メソッドを使用して確認してみましょう。
   
-```ruby
+```rb
 User.where(id: [1, 2, 3]).to_sql
 
 # => 'SELECT "users".* FROM "users" WHERE "users"."id" IN (1, 2, 3)'
@@ -311,7 +311,7 @@ User.where(id: [1, 2, 3]).to_sql
 
 `where`メソッドをチェーンしサブクエリを発行します。
 
-```bash
+```sh
 Favorite.where(title: "title1").where(user: User.where(name: "name2"))
 ```
 
@@ -330,7 +330,7 @@ SELECT "favorites".*
 `or`メソッドを使用し、OR条件で絞り込みを行う。<br>
 Rails5系から`or`メソッドが実装されました。
 
-```bash
+```sh
 User.where(id: 1).or(User.where(name: "user2"))
 ```
 
@@ -349,7 +349,7 @@ SELECT "users".*
 `not`メソッドを使い否定する。<br>
 `not`メソッドを使用し`where`メソッドなどで指定した条件を否定することができます。
   
-```bash
+```sh
 User.where.not(id: 1)
 ```
 
