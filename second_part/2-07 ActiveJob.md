@@ -114,7 +114,7 @@ CSVファイルをアップロードする機能を作成します。
 
 `app/forms/upload_form.rb`(新規作成)
 
-``` rb
+```rb
 require 'csv'
 
 class UploadForm
@@ -159,7 +159,7 @@ rails g controller csv_controller index
 
 `config/routes.rb`
 
-``` rb
+```rb
 ・
 ・
 ・
@@ -172,7 +172,7 @@ post 'upload', to: 'csv#upload' # 追加
 
 `app/controllers/csv_controller.rb`
 
-``` rb
+```rb
 class CsvController < ApplicationController
   def index
     @upload_form = UploadForm.new # 追加
@@ -230,7 +230,7 @@ end
 
 'Gemfile'
 
-``` rb
+```rb
 ・
 ・
 ・
@@ -247,7 +247,7 @@ bundle install
 
 `config/application.rb`
 
-``` rb
+```rb
 ・
 ・
 ・
@@ -263,14 +263,14 @@ end
 
 `config/initializers/resque.rb`を新たに作成
 
-``` rb
+```rb
 Resque.redis = 'localhost:6379'
 Resque.redis.namespace = "resque:app_name:#{Rails.env}" # アプリ毎に異なるnamespaceを定義しておく
 ```
 
 `lib/tasks/resque.rake`を新たに作成
 
-``` rb
+```rb
 require 'resque/tasks'
 task 'resque:setup' => :environment
 ```
@@ -284,7 +284,7 @@ rails g job csv_import
 
 `app/jobs/csv_import_job.rb`
 
-``` rb
+```rb
 class CsvImportJob < ApplicationJob
   queue_as :default
 
@@ -298,7 +298,7 @@ end
 
 `app/forms/upload_form.rb`を以下のように修正します。
 
-``` rb
+```rb
 ・
 ・
 ・

@@ -36,6 +36,10 @@ end
 
 minitestと違って、RSpecはRuby本体には組み込まれていません。`gem install rspec`でgemをインストールしてください。
 
+```sh
+$ gem install rspec
+```
+
 gemをインストールすることで、RSpecのテストを実行するための`rspec`コマンドもインストールされます。
 
 ### Arrayクラスのテストを書く
@@ -48,6 +52,10 @@ Arrayクラスを題材にしてRSpecのテストを書いてみましょう。
 
 次に、RSpecの設定ファイルを用意します。`rspec_array`ディレクトリで`rspec --init`を実行してください。
 
+```sh
+$ rspec --init
+```
+
 - `.rspec`
 - `spec/spec_helper.rb`
 
@@ -57,7 +65,7 @@ Arrayクラスを題材にしてRSpecのテストを書いてみましょう。
 
 RSpecでは、テストコードは`spec`ディレクトリに`***_spec.rb`という名前で配置することになっています。
 
-以下のプログラムを`spec/array_spec.rb`に保存してください。
+`spec/array_spec.rb`を作成して、以下のコードを追加してください。
 
 ```rb
 # spec/array_spec.rb
@@ -68,7 +76,7 @@ end
 
 `rspec_array`ディレクトリで`rspec`コマンドを実行してみましょう。以下のように、最後に`0 examples, 0 failures`と表示されれば成功です。
 
-```
+```sh
 $ rspec
 No examples found.
 
@@ -104,7 +112,7 @@ minitestではクラスとメソッドを使ってテストケースを表現し
 
 新しいテストコードを入力して`rspec`コマンドを実行してみましょう。以下のように`1 example, 0 failures`と表示されていれば成功です。
 
-```
+```sh
 $ rspec
 .
 
@@ -132,7 +140,7 @@ end
 
 `rspec`コマンドを実行すると以下のように出力されます。
 
-```
+```sh
 $ rspec
 F
 
@@ -186,6 +194,8 @@ RSpecはテストケースを実行例として整理するために、このよ
 まず、テストケースに名前をつけてみましょう。次のように`it`の最初の引数に文字列を渡すと名前をつけることができます。
 
 ```rb
+# spec/array_spec.rb
+
 RSpec.describe Array do
   it '引数なしでArray.newを実行すると空の配列を返す' do
     expect(Array.new).to eq []
@@ -200,6 +210,8 @@ end
 さらに、次のように`describe`メソッドと`context`メソッドを入れ子にすることができます。
 
 ```rb
+# spec/array_spec.rb
+
 RSpec.describe Array do
 
   # describeメソッドで「何についてのテストなのか」を示す
@@ -223,7 +235,7 @@ end
 
 `--format documentation`オプションをつけて`rspec`コマンドを実行すると、次のようにテストの実行結果がドキュメント形式で表示されます。
 
-```
+```sh
 $ rspec --format documentation
 
 Array

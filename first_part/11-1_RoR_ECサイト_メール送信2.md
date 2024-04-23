@@ -244,7 +244,7 @@ irb(main):002:0> TodoTaskMailer.registration_mail(test).deliver
 `OpenSSL::SSL::SSLError`のエラーが発生し、メールの送信ができないことがあります。本来はセキュリティの都合上、SSL証明書の検証を行ったほうが良いのですが、今回はそれを省いた設定を行います。本番環境では避けるべき設定です。本番環境では、適切なSSL証明書を取得し、正しく設定するように注意してください。  
 以下のようにコードを修正してください。
 
-``` rb
+```rb
 # config/environments/development.rb
 
 require "active_support/core_ext/integer/time"

@@ -33,7 +33,7 @@ GitHubに登録したメールアドレスが正しければ`COMPLETE SIGN UP`�
 PostgreSQLを使用するためのgemを追加します。
 
 `Gemfile`
-``` ruby
+```rb
     ruby '2.7.7'
          ・
          ・
@@ -68,7 +68,7 @@ bundle lock --add-platform x86_64-linux
 
 `config/database.yml` を開いて、production環境のデータベース指定を変更してください。
 
-``` ruby
+```rb
 production:
   <<: *default
   database: db/production.sqlite3 #削除

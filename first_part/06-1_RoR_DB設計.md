@@ -396,7 +396,7 @@ __【各データのフィールド名（アルファベット）を決める】
   - 条件に変数を使用したい場合等に、?(プレースホルダ)を使用します。  
   変数でなくても、直接値を指定することも可能です。  
 
-  ``` ruby
+  ```rb
   name = "test"
   User.where("name = ?", name)
   #SELECT  "users".* FROM "users" WHERE (name = 'test')

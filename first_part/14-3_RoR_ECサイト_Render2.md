@@ -32,12 +32,12 @@ Regionは先ほど作成したDBに合わせます。
 
 Build Commandはデプロイするときにどのような設定でアプリを起動するかを決めるコマンドです。
 
-``` ruby
+```rb
 bundle install && yarn install && bundle exec rake assets:precompile && bundle exec rake assets:clean && bundle exec rails webpacker:compile && bundle exec rake db:migrate
 ```
 
 seedデータをデプロイ時に`db:seed`することもできます。もし、seedデータを登録する場合には二重にデータが登録されるなど様々な不具合に繋がることもありますので、コードをしっかりと確認してから登録するようにしましょう。
-``` ruby
+```rb
 bundle install && yarn install && bundle exec rake assets:precompile && bundle exec rake assets:clean && bundle exec rails webpacker:compile && bundle exec rake db:migrate && bundle exec rails db:seed
 ```
 
@@ -51,18 +51,18 @@ Keyところには`RAILS_MASTER_KEY`、Valueにはアプリ内の`config/master.
 
 マスターキーがなければマスターキーを生成します。  
 ファイルが存在していれば、削除します。
-``` ruby
+```rb
 rm config/credentials.yml.enc config/master.key
 ```
 
 マスターキーの生成します。下記のコマンドを実行してください。  
 Macの場合(Linuxの場合)
-``` ruby
+```rb
 EDITOR="code -w" bin/rails credentials:edit
 ```
 
 Windowsの場合
-``` ruby
+```rb
 set EDITOR="code -w"
 rails credentials:edit
 ```
@@ -85,14 +85,14 @@ Filenameには`.env`、File Contentsには`.env`何に入力された内容を�
 
 `babel.config.js`のL57とL63にある以下の設定を変更します。(環境によって差異があればファイル内検索を使いましょう。)
 `babel.config.js`L57
-``` ruby
+```rb
 @babel/plugin-proposal-private-methods #変更前
 ↓
 @babel/plugin-transform-private-methods #変更後
 ```
 
 `babel.config.js`L63
-``` ruby
+```rb
 @babel/plugin-proposal-private-property-in-object #変更前
 ↓
 @babel/plugin-transform-private-property-in-object #変更後

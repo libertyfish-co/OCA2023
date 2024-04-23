@@ -111,7 +111,7 @@ has_and_belongs_to_manyはhas_many :throughと仕様が異なっているため�
   - 条件に変数を使用したい場合等に、?(プレースホルダ)を使用します。  
   変数でなくても、直接値を指定することも可能です。(冗長ですが例も記載しています。)
 
-  ``` ruby
+  ```rb
   name = "test"
   User.where("name = ?", name)
   #SELECT  "users".* FROM "users" WHERE (name = 'test')

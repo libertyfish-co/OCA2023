@@ -40,7 +40,7 @@ Herokuのアカウントを持っていない人は、以下のサイトのSign 
 Herokuでアプリケーションにアクセスした際に初期表示するページを設定します。  
 
 `config/routes.rb` を開いて、表示したい任意のページを設定してください。
-``` ruby
+```rb
 Rails.application.routes.draw do
   root 'books#index' # 追加例
 end
@@ -58,7 +58,7 @@ end
 また、Gemfileの先頭でRubyのversionも指定しましょう。今回は、2.7.4で記載していますが、ここのversionは開発しているversionを指定してください。versionを指定しない場合は、herokuのデフォルトのバージョンになります。何か問題が生じた場合の切り分けや、開発環境の確認のためにも明示的に記載したほうが良いでしょう。
 
 `Gemfile`
-``` ruby
+```rb
     ruby '2.7.7'
          ・
          ・
