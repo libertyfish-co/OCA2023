@@ -23,8 +23,9 @@
 
 Gemfileへの追加とインストールをしましょう
 
-`Gemfile`
-```
+```rb
+# Gemfile
+
 gem 'ransack'
 ```
 
@@ -35,21 +36,23 @@ $ bundle install
 
 Scaffoldを使って一覧画面を準備しましょう
 
-`$ rails g scaffold employee name age:integer`
-
-`$ rails g scaffold customer employee:references name age:integer`
+```sh
+$ rails g scaffold employee name age:integer
+$ rails g scaffold customer employee:references name age:integer
+```
 
 generatorで生成されたコードはその時点で一度コミットする癖を付けましょう。
 
 migrateします。
 
-`$ rails db:migrate`
-
+```sh
+$ rails db:migrate
+```
 リレーションの設定を行います。
 
-`app/models/employee.rb`
+```rb
+# app/models/employee.rb
 
-```
 class Employee < ApplicationRecord
   has_many :customers # 追加
 end
@@ -59,9 +62,9 @@ end
 
 db/seeds.rbに下記コードを追記しましょう
 
-`db/seeds.rb`
+```rb
+# db/seeds.rb
 
-```
 employee1 = Employee.create(name: '岸部一樹', age: 31)
 employee2 = Employee.create(name: '崎谷雄大', age: 25)
 employee3 = Employee.create(name: '北出小百合', age: 55)
@@ -79,7 +82,9 @@ employee3.customers.create(name: '片原昭夫', age: 29)
 
 サンプルデータを登録します。
 
-`rails db:seed`
+```sh
+$ rails db:seed
+```
 
 `app/models/customer.rb`はscaffoldでreferencesを指定したので自動生成されています。
 
@@ -88,9 +93,9 @@ employee3.customers.create(name: '片原昭夫', age: 29)
 
 また、検索結果をわかりやすくるために、担当者（Employee）の名前と年齢が表示されるようにしましょう。(2)
 
-`app/views/customers/index.html.erb`
+```html
+<!-- app/views/customers/index.html.erb -->
 
-```
 <p id="notice"><%= notice %></p>
 
 <h1>Customers</h1>
@@ -148,7 +153,6 @@ employee3.customers.create(name: '片原昭夫', age: 29)
 <br>
 
 <%= link_to 'New Customer', new_customer_path %>
-
 ```
 
 検索フォームを作成するには`ransack`が提供するViewHelperの`search_form_for`を利用します。
@@ -177,9 +181,9 @@ employee3.customers.create(name: '片原昭夫', age: 29)
 
 画面で入力した内容を受け取って検索を実行します。
 
-`app/controllers/customers_controller.rb`
+```rb
+# app/controllers/customers_controller.rb
 
-```
   # 変更前
   def index
     @customers = Customer.all
@@ -194,9 +198,9 @@ employee3.customers.create(name: '片原昭夫', age: 29)
 
 ransack 4.0以降、コントローラでのStrong Parameterに似た仕組みとして、以下のように利用したいattributesを受け付けて、不要なattributesは受け取らないようにするための記述をするようになりました。
 
-`app/models/customer.rb`
+```rb
+# app/models/customer.rb
 
-```
   # 追加(画面で検索に利用する項目を列挙します)
   # 検索画面の検索項目として顧客(Customer)のname, age, employee_id(社員の選択肢)が配置されているので、それらを受け付けます。
   def self.ransackable_attributes(auth_object = nil)
@@ -211,9 +215,9 @@ ransack 4.0以降、コントローラでのStrong Parameterに似た仕組み�
   end
 ```
 
-`app/models/employee.rb`
+```rb
+# app/models/employee.rb
 
-```
   # 追加(画面で検索に利用する項目を列挙します)
   # 検索画面の検索項目として、社員(Employee)のageが配置されているので、それを受け付けます。
   def self.ransackable_attributes(auth_object = nil)
@@ -223,7 +227,7 @@ ransack 4.0以降、コントローラでのStrong Parameterに似た仕組み�
 
 ransack 4.0以前の場合は、他の画面のコントローラと同様に、必要な項目だけを受け付けるようにStrong Parameterの仕組みを使って、以下のように記述しましよう。
 
-```
+```rb
   def index
     @q = Customer.ransack(q_params)
     @customers = @q.result
@@ -242,7 +246,7 @@ ransack 4.0以前の場合は、他の画面のコントローラと同様に、
 
 また、このオブジェクトに対して`result`メソッドを呼び出すことで検索を実行して結果が取得できます。
 
-`rails s`でサーバを起動して`http://localhost:3000/customers`にアクセスしてみましょう。
+`rails s`でサーバを起動して<http://localhost:3000/customers>にアクセスしてみましょう。
 検索フォームと検索結果が表示されていると思います。
 
 条件を入力して検索してみましょう。

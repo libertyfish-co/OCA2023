@@ -72,7 +72,7 @@ confirmations/  mailer/  passwords/  registrations/  sessions/  shared/  unlocks
 
 
 
-__【問題】__  
+#### 練習 
 新しくアプリを作成しましょう。その際、`Devise`を使ってユーザー認証をしましょう。  
 また以下の通りにアプリを作成してください。  
 - `Devise`を使って`User`モデルを作成する
