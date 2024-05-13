@@ -34,7 +34,7 @@ PostgreSQLを使用するためのgemを追加します。
 
 ```rb
 # Gemfile
-ruby "3.2.2"
+ruby "3.2.4"
       ・
       ・
 # Use sqlite3 as the database for Active Record
