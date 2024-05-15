@@ -43,7 +43,7 @@ $ git switch -c new_branch
   ```sh
   $ git branch
     * call_fizzbuzz
-    master
+    main
   ```
 
 - 問題：作業ブランチに変更内容をコミットする
