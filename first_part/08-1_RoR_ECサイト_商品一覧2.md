@@ -288,7 +288,7 @@ end
 ```
 
 ```html
-<!-- app/views/posts/new.html.erb -->
+<!-- app/views/posts/edit.html.erb -->
 
 <h1>編集</h1>
 
