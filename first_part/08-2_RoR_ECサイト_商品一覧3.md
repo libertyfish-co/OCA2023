@@ -155,7 +155,9 @@ class PostsController < ApplicationController
   ・
   def destroy
     @post.destroy
-    redirect_to posts_path, notice: '削除が完了しました。'
+    respond_to do |format|
+    format.html { redirect_to posts_path, notice: '削除が完了しました。', status: :see_other}
+    format.json { head :no_content}
   end
 
   private
