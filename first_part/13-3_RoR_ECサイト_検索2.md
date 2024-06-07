@@ -38,7 +38,7 @@ Scaffoldを使って一覧画面を準備しましょう
 
 ```sh
 $ rails g scaffold employee name age:integer
-$ rails g scaffold customer employee:references name age:integer
+$ rails g scaffold customer employee:references name:string age:integer
 ```
 
 generatorで生成されたコードはその時点で一度コミットする癖を付けましょう。
@@ -228,6 +228,8 @@ ransack 4.0以降、コントローラでのStrong Parameterに似た仕組み�
 ransack 4.0以前の場合は、他の画面のコントローラと同様に、必要な項目だけを受け付けるようにStrong Parameterの仕組みを使って、以下のように記述しましよう。
 
 ```rb
+# app/controllers/customers_controller.rb
+
   def index
     @q = Customer.ransack(q_params)
     @customers = @q.result
