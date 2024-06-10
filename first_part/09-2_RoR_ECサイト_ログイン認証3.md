@@ -82,7 +82,6 @@ confirmations/  mailer/  passwords/  registrations/  sessions/  shared/  unlocks
 - サインアップ、ログイン後はmy_pageへ遷移する
 - ログインしているユーザーのみmy_page画面へ遷移できる
 - ログアウト後はtop画面へ遷移する
-- ログインしていないユーザーはtop画面へ遷移する
 - my_pageにはログインしているユーザーの名前を表示する
 
 
