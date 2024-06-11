@@ -92,7 +92,7 @@ Webアプリケーションには、基本となる新規作成 (Create)、表�
 4つの機能があります。これらの頭文字を取って `CRUD` と呼ばれています。
 `scaffold`では、新規作成、表示、更新、削除の各機能も一括で作成されています。
 
-__【テーブルの作成】__  
+__【テーブルの作成】__    
 先に話した通り、DBのテーブルだけはまだ生成されていません。  
 ただし、実はテーブルを生成するための準備はもう出来ています。  
 
@@ -191,5 +191,5 @@ edit_user GET    /users/:id/edit(.:format) users#edit
 |:--|:--|
 |Create|新規作成(new, create)|
 |Read|データ一覧・個別の表示(index, show)|
-|Update|データの更新(edit, update)|
+|Update|データの編集・更新(edit, update)|
 |Delete|データの削除(delete)|
