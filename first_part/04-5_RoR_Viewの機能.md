@@ -190,9 +190,7 @@ CSSにコンパイル後
 
 ```scss
 @mixin border($color: yellow) { // 引数にデフォルト値を指定している
-  border: solid $color;
-  height: 300px;
-  width: 300px;
+  border-top: 2px solid $color;
 }
 
 #header {
@@ -201,8 +199,6 @@ CSSにコンパイル後
 
 #footer {
   @include border(gray);
-  height: 200px;
-  width: 200px;
 }
 ```
 
@@ -210,7 +206,7 @@ CSSにコンパイル後
 
 ```css
 #header {
-  border-top: 2px solid white;
+  border-top: 2px solid yellow;
 }
 
 #footer {
