@@ -192,4 +192,4 @@ edit_user GET    /users/:id/edit(.:format) users#edit
 |Create|新規作成(new, create)|
 |Read|データ一覧・個別の表示(index, show)|
 |Update|データの編集・更新(edit, update)|
-|Delete|データの削除(delete)|
+|Delete|データの削除(destroy)|
