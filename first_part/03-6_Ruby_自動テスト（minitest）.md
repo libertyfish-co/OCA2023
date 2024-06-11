@@ -261,4 +261,9 @@ minitestには他にも多くの機能があり、プラグインで拡張する
 - minitestのアサーションメソッドの実装を読んでみましょう。
 - minitestの実行結果はカスタムレポーターを定義することで自由にカスタマイズできます。カスタムレポーターとその自動テストを書いてみましょう。
 
+### 練習
+
+- 引数として受け取った整数以下の全ての正の偶数を配列に格納するget_even_numbersメソッドを作成しましょう。
+- 上のget_even_numbersメソッドの自動テストをminitestで書いてみましょう。
+
 minitestのソースコードはGitHubで公開されています（<https://github.com/seattlerb/minitest>）。
