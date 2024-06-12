@@ -257,3 +257,25 @@ SCSSで3つのタグh1,h2,h3の色とフォントサイズを以下の条件で�
 - h1のフォントサイズはh2より4px大きく、h3の2倍の大きさである。
 
 h1の色が青色、フォントサイズが20pxであるときのタグh1,h2,h3をSCSSで記述してみましょう。
+
+### 4.5.7 解答(練習)
+
+```scss
+$main_color: blue;
+$main_font_size: 20px;
+
+h1 {
+    color: $main_color;
+    font-size: $main_font_size;
+}
+
+h2 {
+    color: $main_color;
+    font-size: $main_font_size - 4px;
+}
+
+h3 {
+    color: $main_color;
+    font-size: $main_font_size / 2;
+}
+```
