@@ -90,7 +90,7 @@ $main_width: 500px;
 
 
 #main {
-  height: $main_height + 100;
+  height: $main_height + 100px;
   width: $main_width / 2;
   background-color: red;
 }
