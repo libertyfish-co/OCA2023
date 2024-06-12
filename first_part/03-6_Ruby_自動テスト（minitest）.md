@@ -266,4 +266,38 @@ minitestには他にも多くの機能があり、プラグインで拡張する
 - 引数として受け取った整数以下の全ての正の偶数を配列に格納するget_even_numbersメソッドを作成しましょう。
 - 上のget_even_numbersメソッドの自動テストをminitestで書いてみましょう。
 
+### 解答(練習)
+
+```rb
+# minitestの読み込み
+require 'minitest/autorun'
+
+# get_even_numbersメソッドを定義
+def get_even_numbers(n)
+    (1..n).select(&:even?)
+end
+
+# Minitest::Testクラスを継承する
+class TestGetEvenNumber < Minitest::Test
+
+    def test_get_even_numbers
+        result = get_even_numbers(10)
+
+        # メソッドが偶数を含む配列を返すことを確認
+        assert_includes result, 2
+        assert_includes result, 4
+        assert_includes result, 6
+        assert_includes result, 8
+        assert_includes result, 10
+
+        # 奇数は含まれていないことを確認
+        refute_includes result, 1
+        refute_includes result, 3
+        refute_includes result, 5
+        refute_includes result, 7
+        refute_includes result, 9
+    end
+end
+```
+
 minitestのソースコードはGitHubで公開されています（<https://github.com/seattlerb/minitest>）。
