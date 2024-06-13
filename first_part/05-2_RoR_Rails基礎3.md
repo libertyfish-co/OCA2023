@@ -288,3 +288,22 @@ end
 - title(string) 空白チェック有
 - author(string)
 - pages(integer)
+
+### 5.2.1 解答(練習)
+
+以下を実行
+```sh
+rails new library
+cd library
+rails g scaffold Book title:string author:string pages:integer
+rails db:migrate
+```
+
+app/models/book.rbに以下を追加
+```rb
+# app/models/book.rb
+
+class Book < ApplicationRecord
+    validates :title, presence: true # 追加
+end
+```
