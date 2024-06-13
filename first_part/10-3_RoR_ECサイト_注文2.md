@@ -165,7 +165,7 @@ class ArticlesController < ApplicationController
       if @article.save
         redirect_to articles_path, notice: '登録が完了しました。'
       else
-        render :new
+        render :new, status: :unprocessable_entity
       end
     end
   end
