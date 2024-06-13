@@ -365,3 +365,90 @@ SELECT "users".*
   FROM "users" 
  WHERE "users"."id" != 1
 ```
+
+### 4.6.4 練習
+
+railsで以下の要件をもつshop_appという名前のアプリケーションを作成しましょう。
+- 以下のような店舗テーブルと商品テーブルを持つ。
+
+`Shop: 店舗テーブル`
+
+| field名 | 名称 | 型 |
+|---|---|---|
+| id | ID | integer |
+| name | 店舗名 | string |
+
+`Products: 商品テーブル`
+
+| field名 | 名称 | 型 |
+|---|---|---|
+| id | ID | integer |
+| user_id | 店舗ID | integer |
+| name | 商品名 | string |
+
+- 初期データとして商品数が10未満、10以上の店舗を持つ。
+- /shops/indexにアクセスした際に商品数が10以上の店舗を一覧で表示する。
+
+### 4.6.5 解答(練習)
+
+```sh
+$ rails new shop_app
+$ cd shop_app
+$ rails g model Shop name:string
+$ rails g model Product shop:references name:string
+$ rails db:migrate
+$ rails g controller Shops index
+```
+
+```rb
+# app/models/shop.rb
+
+Class Shop <ApplicationRecord
+  has_many :products
+end
+```
+
+```rb
+# app/models/product.rb
+
+Class Product < ApplicationRecord
+  belongs_to :shop
+end
+```
+
+```rb
+# app/views/shop/index.html.erb
+
+<h1>商品数10以上の店舗一覧</h1>
+  <% @shops.each do |shop| %>
+    <div>・店舗名：<%= shop.name %>　商品数：<%= shop.products.count %></div>
+  <% end %>
+```
+
+```rb
+# app/controller/shops_controller.rb
+
+class ShopsController < ApplicationController
+  def index
+    @shops = Shop.joins(:products)
+                 .group('shops.id')
+                 .having('COUNT(products.id) >= 10')
+  end
+end
+```
+
+```rb
+# /db/seeds.rb
+
+・
+・
+# 店舗を作成
+5.times do |i|
+    shop = Shop.create(name: "店舗#{i + 1}")
+  
+    # 商品を作成
+    (i + 8).times do |j|
+      shop.products.create(name: "商品#{j + 1}")
+    end
+end
+```
