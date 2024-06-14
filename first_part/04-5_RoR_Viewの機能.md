@@ -90,7 +90,7 @@ $main_width: 500px;
 
 
 #main {
-  height: $main_height + 100;
+  height: $main_height + 100px;
   width: $main_width / 2;
   background-color: red;
 }
@@ -190,9 +190,7 @@ CSSにコンパイル後
 
 ```scss
 @mixin border($color: yellow) { // 引数にデフォルト値を指定している
-  border: solid $color;
-  height: 300px;
-  width: 300px;
+  border-top: 2px solid $color;
 }
 
 #header {
@@ -201,8 +199,6 @@ CSSにコンパイル後
 
 #footer {
   @include border(gray);
-  height: 200px;
-  width: 200px;
 }
 ```
 
@@ -210,7 +206,7 @@ CSSにコンパイル後
 
 ```css
 #header {
-  border-top: 2px solid white;
+  border-top: 2px solid yellow;
 }
 
 #footer {
@@ -253,3 +249,33 @@ Rubyのスクリプトを埋め込むことができるので、htmlファイル
 
 RailsでSASS(SCSS)を使用するには、 `sass-rails` というgemをインストールする必要がありますが、Rails3.1以降から `Rails new` でプロジェクトを作成すれば自動的にインストールされる仕様となったため、 `sass-rails` をインストールするために必要な作業は特にありません。
 またSASS(SCSS)は、最終的にブラウザが解釈できるCSSにコンパイルする必要がありますが、Railsでは、アセットパイプラインで、「 `.scss` 」から「 `.css` 」へのコンパイルは自動的に行われるので、これについても特に意識する必要はありません。
+
+### 4.5.7 練習
+
+SCSSで3つのタグh1,h2,h3の色とフォントサイズを以下の条件で管理したい。
+- 全てのタグ同色である。
+- h1のフォントサイズはh2より4px大きく、h3の2倍の大きさである。
+
+h1の色が青色、フォントサイズが20pxであるときのタグh1,h2,h3をSCSSで記述してみましょう。
+
+### 4.5.7 解答(練習)
+
+```scss
+$main_color: blue;
+$main_font_size: 20px;
+
+h1 {
+    color: $main_color;
+    font-size: $main_font_size;
+}
+
+h2 {
+    color: $main_color;
+    font-size: $main_font_size - 4px;
+}
+
+h3 {
+    color: $main_color;
+    font-size: $main_font_size / 2;
+}
+```
