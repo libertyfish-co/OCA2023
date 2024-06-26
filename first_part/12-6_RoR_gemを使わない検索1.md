@@ -36,8 +36,8 @@ $ rails new search_sample
 Scaffoldを使って一覧画面を準備しましょう
 
 ```sh
-$ rails g scaffold employee name age:integer
-$ rails g scaffold customer employee:references name age:integer
+$ rails g scaffold Employee name:string age:integer
+$ rails g scaffold Customer employee:references name:string age:integer
 ```
 
 generatorで生成されたコードはその時点で一度コミットする癖を付けましょう。
