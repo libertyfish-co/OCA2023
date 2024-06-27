@@ -115,7 +115,7 @@ $ rails s
 このように直接一覧画面に遷移していれば成功です。  
 
 __【例題】__  
-次は地域(Area)テーブルを`rails g scaffold`しましたが、次は`rails g model`や`rails g controller`を使って同じようにアプリを作成しましょう。  
+先ほどは地域(Area)テーブルを`rails g scaffold`しましたが、次は`rails g model`や`rails g controller`を使って同じようにアプリを作成しましょう。  
 
 ![新規](images/08_1_3.png)  
 ![一覧](images/08_1_4.png)  
