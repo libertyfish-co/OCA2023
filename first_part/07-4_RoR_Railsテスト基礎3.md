@@ -4,10 +4,13 @@
 
 #### Model テスト
 
-Model でバリデータを定義してそれが正しく定義されているか確認するテストを実装してみましょう。利用者は名前と電話番号を持ち、それらは必ず入力しなければならないとします。
+Model でバリデータを定義してそれが正しく定義されているか確認するテストを実装してみましょう。利用者は名前と電話番号を持ち、それらは必ず入力しなければならないとします。  
 
-- app/models/user.rb
+以前に作成した`rspec_practice`のアプリを使います。  
+
 ```rb
+# app/models/user.rb
+
 class User < ApplicationRecord
   validates :name, presence: true
   validates :phone_number, presence: true
@@ -16,8 +19,9 @@ end
 
 また、テストデータはFactoryBotを利用するので次のように実装します。
 
-- spec/factories/users.rb
 ```rb
+#  spec/factories/users.rb
+
 FactoryBot.define do
   factory :user do
     name { Gimei.new.kanji }
@@ -26,56 +30,55 @@ FactoryBot.define do
 end
 ```
 
-FactoryBotを使って実装したデータは`build(:user)`や`create(:user)`メソッドを使ってテストデータを作成することが出来ます。`rails console`コマンドでプロンプトを立ち上げて実行してみましょう。テストデータが作成されることが確認出来ましたか？
+FactoryBotを使って実装したデータは`build(:user)`や`create(:user)`メソッドを使ってテストデータを作成することが出来ます。  
+- build：レコードは作成するがテスト用のDBに保存しません。
+         RailsのUser.newと同様
+- create：レコードを作成してテスト用のDBに保存します。
+         RailsのUser.createと同様
+
+`rails c`コマンドでプロンプトを立ち上げて実行してみましょう。
 
 テーブルを作成します。
 
-```bash
-rails db:migrate
+```sh
+$ rails db:migrate
 ```
 
 コンソールを起動します。
 
-```bash
-rails console
-```
-
-結果
-```
-Running via Spring preloader in process 55944
-Loading development environment (Rails 6.1.7.4)
-irb(main)001:0>
+```sh
+$ rails c
 ```
 
 テストデータを作成するコマンドを実行してみましょう。
-```
-FactoryBot.build :user
+```sh
+$ FactoryBot.build :user
 ```
 
 結果
-```
+```sh
 => #<User id: nil, name: "池上 羽海", phone_number: "XXX-YYYY-ZZZZ", created_at: nil, updated_at: nil>
 irb(main)002:0>
 ```
 
 もう一度テストデータを作成するコマンドを実行してみましょう。
-```
-FactoryBot.build :user
+```sh
+$ FactoryBot.build :user
 ```
 
 結果
-```
+```sh
 => #<User id: nil, name: "秋田 健夫", phone_number: "XXX-YYYY-ZZZZ", created_at: nil, updated_at: nil>
 irb(main)003:0>
 ```
 
-nameの値はGimeiによってランダムで作成されています。
+nameの値はGimeiによってランダムで作成されています。  
 
+肝心のテストですが、利用者についてのテストは次のようになります。実際に入力してテストの結果が変更されることを確認してみましょう。  
 
-肝心のテストですが、利用者についてのテストは次のようになります。実際に入力してテストの結果が変更されることを確認してみましょう。
-
-- spec/models/user_spec.rb
 ```rb
+# spec/models/user_spec.rb
+
 require 'rails_helper'
 
 RSpec.describe User, type: :model do
@@ -99,12 +102,12 @@ end
 ```
 
 テストを実行します。
-```bash
-bin/rake
+```sh
+$ bundle exec rails spec
 ```
 
 結果
-```
+```sh
 User
   is valid with name and phone number
   is invalid without name
@@ -116,14 +119,15 @@ Finished in 0.30021 seconds (files took 1.36 seconds to load)
 16 examples, 0 failures, 12 pending
 ```
 
-テストが正しく記述できていれば、0 failuresになります。
+テストが正しく記述できていれば、0 failuresになります。  
 
 ここで、テストコードを一部修正して、エラーを発生させてみましょう。
 
 先程の2つ目のテストコードはnameの値がnilのuserを作成して、userの作成が失敗することを確認していた部分を、nameに値が設定されるように修正してみましょう。
 
-- spec/models/user_spec.rb
 ```rb
+# spec/models/user_spec.rb
+
 require 'rails_helper'
 
 RSpec.describe User, type: :model do
@@ -142,12 +146,12 @@ end
 ```
 
 テストを実行します。
-```bash
-bin/rake
+```sh
+$ bundle exec rails spec
 ```
 
 結果
-```
+```sh
 User
   is valid with name and phone number
   is invalid without name (FAILED - 1)
@@ -174,7 +178,7 @@ nameの値がnilでないのでuserの作成が成功し、テストの期待値
 
 エラーにならないように、もとのコードに戻しておきましょう。
 
-メソッドをひとつずつ解説するときりがありませんが、RSpecの構造は次のようになります。
+メソッドをひとつずつ解説するときりがありませんが、RSpecの構造のおさらいをします。
 
 - `describe(context)`
 引数にどのようなテストを行うか示すために、メソッド名やルーティングを記述してテストのグルーピングを行います。
@@ -237,28 +241,28 @@ nameの値がnilでないのでuserの作成が成功し、テストの期待値
 
 #### System テスト
 
- エンドツーエンド (`E2E`) のテストを行います。
+エンドツーエンド (`E2E`) のテストを行います。
 
 Javascriptを利用した画面等のテストを作成します。
 
- `spec/system` ディレクトリを作成します。
+`spec/system` ディレクトリを作成します。
 
- ```bash
- mkdir spec/system
- ```
+```sh
+$ mkdir spec/system
+```
 
- テストコードを記述する `users_spec.rb` を作成します。
+テストコードを記述する `users_spec.rb` を作成します。
 
- ```bash
- touch spec/system/users_spec.rb
- ```
+```sh
+$ touch spec/system/users_spec.rb
+```
 
 SystemSpecは毎回Chromeを利用しますが、今回のE2Eテストは、JavaScriptがなくても実行可能なテストなので、Chromeを利用しない設定にします。 `spec/rails_helper.rb` に下記の設定を記述しましょう。
 これで `js: true` のタグが付いているテストケースだけChromeを利用するようになりました。
 
-- `spec/rails_helper.rb`
-
 ```rb
+# spec/rails_helper.rb
+
 RSpec.configure do |config|
   #(省略)
 
@@ -274,9 +278,9 @@ RSpec.configure do |config|
 end
 ```
 
-- spec/system/users_spec.rb
-
 ```rb
+# spec/system/users_spec.rb
+
 require 'rails_helper'
 
 RSpec.describe "Users", type: :system do
@@ -354,12 +358,12 @@ end
 ```
 
 テストを実行します。
-```bash
-bin/rake
+```sh
+$ bundle exec rails spec
 ```
 
 結果
-```
+```sh
 (中略)
 
 Users
@@ -409,12 +413,12 @@ end
 ```
 
 テストを実行します。
-```bash
-bin/rake
+```sh
+$ bundle exec rails spec
 ```
 
 結果
-```
+```sh
 (中略)
 
 Users
@@ -453,3 +457,22 @@ rspec ./spec/system/users_spec.rb:23 # Users GET /users/new renders a new user f
 nameの値が入力されていないのでuserの作成が失敗し、テストの期待値(成功)と異なるのでテスト結果がエラーになっています。
 
 エラーにならないように、もとのコードに戻しておきましょう。
+
+
+#### 練習
+以前に作成した`railsbasic`のアプリでRspecを導入してみましょう。  
+
+__【ヒント】__  
+以下の条件を入れてバリデーションが正しく機能しているかテストしてみましょう。
+
+```rb
+# app/models/user.rb
+
+class User < ApplicationRecord
+  validates :name, presence: true
+  validates :email, presence: true
+end
+```
+`User`モデルに関するテストデータは、FactoryBotを使用して作成してください。  
+
+余力があればMinitestにもチャレンジしてみましょう。

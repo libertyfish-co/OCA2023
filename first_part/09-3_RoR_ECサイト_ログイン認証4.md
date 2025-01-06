@@ -13,9 +13,9 @@ rspecがインストールされていない場合はインストールしまし
 ```rb
 ・
 ・
-・
 group :development, :test do
-  ・・・
+  ・
+  ・
   gem 'rspec-rails' # 追加
 end
 ```
@@ -23,11 +23,6 @@ end
 ```sh
 $ bundle install
 $ rails g rspec:install
-Running via Spring preloader in process 35280
-      create  .rspec
-      create  spec
-      create  spec/spec_helper.rb
-      create  spec/rails_helper.rb
 ```
 
 Deviseのテストを行うにはRequest specを利用します。
@@ -37,9 +32,14 @@ Deviseのテストを行うにはRequest specを利用します。
 ログアウトした状態でのテストは特に何も必要ありません。
 いつも通りrequest specを書けば良いです。
 
-`spec/requests/mypage_spec.rb`(新規作成)
+```sh
+$ mkdir spec/requests
+$ touch spec/requests/mypage_spec.rb
+```
 
 ```rb
+# spec/requests/mypage_spec.rb
+
 require 'rails_helper'
 
 RSpec.describe 'Mypage', type: :request do
@@ -61,14 +61,11 @@ end
 
 ログイン状態を作るための設定を行います。
 
-`spec/rails_helper.rb`
-
 ```rb
-・
+# spec/rails_helper.rb
 ・
 ・
 RSpec.configure do |config|
-  ・
   ・
   ・
   # Devise
@@ -81,9 +78,9 @@ end
 
 specファイルを修正します。
 
-`spec/request/mypage_spec.rb`
-
 ```rb
+# spec/request/mypage_spec.rb
+
 require 'rails_helper'
 
 RSpec.describe 'Mypage', type: :request do
@@ -113,6 +110,8 @@ end
 
 これでログインしている時のマイページのテストとログインしていない時のマイページのテストができました。
 
+`-fd`オプションでファイルを指定しましょう。
+
 ```sh
 $ bundle exec rspec -fd spec/requests/mypage_spec.rb
 
@@ -132,4 +131,4 @@ Finished in 0.32214 seconds (files took 2.68 seconds to load)
 
 ### 9.3.2 問題
 
-それでは、今作成しているECサイトの商品一覧に認証を追加してみましょう。また、新たにユーザのCRUDを作成し認証を追加しましょう。
+それでは、今作成しているECサイトの商品一覧に認証を追加してみましょう。また、新たにユーザーのCRUDを作成し認証を追加しましょう。

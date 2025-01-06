@@ -21,7 +21,7 @@ publicのリポジトリを使用する場合はPublic Git repositoryに対象�
 | ------------- | -------------- | 
 | Name          | 対象のアプリ名 | 
 | Region        | Singapore      | 
-| Branch        | master         |
+| Branch        | master(main)   |
 | Runtime       | Ruby           | 
 | Build Command | 下記参照       | 
 
@@ -32,13 +32,13 @@ Regionは先ほど作成したDBに合わせます。
 
 Build Commandはデプロイするときにどのような設定でアプリを起動するかを決めるコマンドです。
 
-``` ruby
-bundle install && yarn install && bundle exec rake assets:precompile && bundle exec rake assets:clean && bundle exec rails webpacker:compile && bundle exec rake db:migrate
+```rb
+bundle install && yarn install && bundle exec rake assets:precompile && bundle exec rake assets:clean && bundle exec rake db:migrate
 ```
 
 seedデータをデプロイ時に`db:seed`することもできます。もし、seedデータを登録する場合には二重にデータが登録されるなど様々な不具合に繋がることもありますので、コードをしっかりと確認してから登録するようにしましょう。
-``` ruby
-bundle install && yarn install && bundle exec rake assets:precompile && bundle exec rake assets:clean && bundle exec rails webpacker:compile && bundle exec rake db:migrate && bundle exec rails db:seed
+```rb
+bundle install && yarn install && bundle exec rake assets:precompile && bundle exec rake assets:clean && bundle exec rake db:migrate && bundle exec rails db:seed
 ```
 
 **Advancedの設定**  
@@ -51,18 +51,18 @@ Keyところには`RAILS_MASTER_KEY`、Valueにはアプリ内の`config/master.
 
 マスターキーがなければマスターキーを生成します。  
 ファイルが存在していれば、削除します。
-``` ruby
+```rb
 rm config/credentials.yml.enc config/master.key
 ```
 
 マスターキーの生成します。下記のコマンドを実行してください。  
 Macの場合(Linuxの場合)
-``` ruby
+```rb
 EDITOR="code -w" bin/rails credentials:edit
 ```
 
 Windowsの場合
-``` ruby
+```rb
 set EDITOR="code -w"
 rails credentials:edit
 ```
@@ -73,7 +73,7 @@ pushが終わりましたら、先ほどの設定を行いましょう。
 **環境変数の設定**
 `.env`に環境変数を設定している場合は、以下の設定を行います。
 `Add Environment Variable`の下にある`Add Secret File`をクリックするとポップアップが出てきます。  
-![環境変数の設定](images/14-3-1-1-05.png) 
+![環境変数の設定](images/14-3-1-1-05.png)  
 Filenameには`.env`、File Contentsには`.env`何に入力された内容を入れてください。
 設定ができれば忘れずに`Save`をクリックしましょう。
 環境変数を設定していなければスルーしても大丈夫です。  
@@ -84,15 +84,17 @@ Filenameには`.env`、File Contentsには`.env`何に入力された内容を�
 デプロイ中に`Error: Cannot find package '@babel/plugin-proposal-private-methods'`のようなエラーが発生した場合は、以下の設定を行います。
 
 `babel.config.js`のL57とL63にある以下の設定を変更します。(環境によって差異があればファイル内検索を使いましょう。)
-`babel.config.js`L57
-``` ruby
+```rb
+# babel.config.js L57
+
 @babel/plugin-proposal-private-methods #変更前
 ↓
 @babel/plugin-transform-private-methods #変更後
 ```
 
-`babel.config.js`L63
-``` ruby
+```rb
+# babel.config.js L63
+
 @babel/plugin-proposal-private-property-in-object #変更前
 ↓
 @babel/plugin-transform-private-property-in-object #変更後
@@ -113,8 +115,8 @@ Dashboardから作成したWeb Serviceを選択して`Environment`にある`Envi
 
 では、ローカルのアプリに戻り設定をします。
 アプリの配下(GemfileやGemfile.lockがある階層)で以下のコマンドを入力しましょう。
-```
-touch render.yaml
+```sh
+$ touch render.yaml
 ```
 
 新しく作成できたファイルに以下の内容を追加します。個別設定が必要な場所にはコメントアウト(#編集)が入っています。

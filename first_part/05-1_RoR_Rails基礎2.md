@@ -2,48 +2,49 @@
 
 ### 5.1.1 アプリの構造解説
 重要な部分を抜粋して紹介していきます。  
+![app](./images/5-1-0.png)
 
-   - app  
+   - **app**  
       アプリケーション本体が格納される  
 
-   - assets  
+   - **assets**  
         WEBページ内で使用するimageファイルや、ページのレイアウトに使用するcss、  
         ページの動きを制御するjs等が格納される  
 
-   - controllers  
-        ユーザアクションを基にアプリを制御するcontrollerが格納される  
+   - **controllers**  
+        ユーザーアクションを基にアプリを制御するcontrollerが格納される  
         MVCの"C"  
 
-   - helpers  
+   - **helpers**  
         「ヘルパーメソッド」と呼ばれるメソッドをまとめたファイルが格納される  
         「ヘルパーメソッド」とは、主にviewを記述する際に役立てるメソッドであり、
         フォーム要素の生成、文字列や数値の整形するメソッド等、viewでよく利用する操作がデフォルトで用意されている
         例えば、`link_to`メソッドでは、与えられた引数を元にハイパーリンクを生成することができる
         ここでは、独自に使用するヘルパーメソッドを定義する
 
-   - models  
+   - **models**  
         データの処理全般を管理するmodelが格納される  
         MVCの"M"  
 
-   - views  
+   - **views**  
         画面に表示する部分のviewが格納される  
         MVCの"V"  
 
-   - config  
+   - **config**  
       Railsアプリの設定に関するファイルが格納される  
       ルーティングを制御するroutes.rb等が格納されている  
       ルーティングとは、ブラウザからのリクエスト(URL)をサーバ側のRailsと結びつける仕組みである
 
-   - db  
+   - **db**  
       DB関係のファイルが格納される  
       DBのテーブルをアプリ側から操作出来るようにしたmigrationファイルや、  
       DBの初期投入データを管理できるseeds.rb等が格納されている  
 
-   - test  
+   - **test**  
       テスト関係のファイルが格納される  
       今回は使用せず、RSpec導入したあとに出来るspecフォルダを代わりに使用する
 
-   - Gemfile  
+   - **Gemfile**  
       アプリで使用するgemをまとめたファイル  
       gemの種類だけでなく、バージョンや使う環境を限定出来る  
 
@@ -63,9 +64,14 @@ __【scaffoldコマンド】__
 この、WEBページで何か機能を使用するために必要なものの塊を`リソース`と呼びます。  
 リソースを全て1から作るのは中々大変ですが、Railsではこのリソースを一括で作成できる  
 `scaffold`という機能があります。早速この機能を使用してみましょう。  
+前回作成した`railsbasic`のアプリに移動しましょう。  
 
+```sh
+$ cd railsbasic
 ```
-rails generate scaffold User name:string email:string
+
+```sh
+$ rails generate scaffold User name:string email:string
 ```
 
 `rails generate`がファイルを作成するコマンドで、`scaffold`はそのうちのモードの1つです。  
@@ -74,13 +80,15 @@ rails generate scaffold User name:string email:string
 あとの`name:string email:string`は、テーブルで使用するカラムを予約しておくためのものです。  
 このscaffoldをした段階では、まだテーブルだけは生成されていないので後でも大丈夫なのですが、  
 この時点で予約しておくとちょっと便利なことがあるので、オプションとして付けておきます。  
+また、`rails generate`は`rails g`と省略できます。    
 
 このコマンドを実行すると、また新たにファイルやフォルダが生成されていると思います。  
+万が一間違えて作成してしまった場合は`rails d`とすることで削除できますので覚えておきましょう。  
 それらについては、また後ほど個別に解説していきます。  
 <br>
 
 __【CRUDについて】__   
-Webアプリケーションには、基本となる新規作成 (create)、表示 (read)、更新 (update)、削除 (delete) の
+Webアプリケーションには、基本となる新規作成 (Create)、表示 (Read)、更新 (Update)、削除 (Delete) の
 4つの機能があります。これらの頭文字を取って `CRUD` と呼ばれています。
 `scaffold`では、新規作成、表示、更新、削除の各機能も一括で作成されています。
 
@@ -118,13 +126,13 @@ end
 
 このファイルを使用してmigrationを行うには、以下のコマンドを実行します。  
 
-```
-rails db:migrate
+```sh
+$ rails db:migrate
 ```
 
 これでテーブルが生成されるので、リソースが機能として使用出来るようになりました。  
 
-試しにRailsアプリを起動して、ブラウザでページを開いたあと、URLの末尾に`/users`と付け足してみて下さい。
+試しにRailsアプリを起動して、ブラウザでページを開いたあと、URLの末尾に`/users`と付け足してみて下さい。  
 そのURLでページを移動すると、ほぼ真っ白なUsersと書かれたページが表示されていると思います。  
 これはテーブルの情報を一覧で表示するページで、「New User」のリンクを押すと新規登録ページに移動します。  
 新規登録したあとには一覧ページに登録したデータが表示され、そこから編集等の操作が出来るようになっています。
@@ -142,9 +150,12 @@ __【routes.rb】__
 その設定は`/config/routes.rb`のファイルに書かれているはずなので、そのファイルを確認してみましょう。  
 
 ```rb
+# config/routes.rb
 Rails.application.routes.draw do
   resources :users
-  # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
+  ・
+  ・
+  ・
 end
 ```
 
@@ -154,13 +165,13 @@ end
 このルーティングの設定は、以下のコマンドで確認できます。  
 Railsアプリを実行中の場合は、もう一つターミナルを立ち上げて実行してみてください。  
 
-```
-rails routes
+```sh
+$ rails routes
 ```
 
 実行すると以下のような内容が表示されるはずです。  
 
-```
+```sh
    Prefix Verb   URI Pattern               Controller#Action
     users GET    /users(.:format)          users#index
           POST   /users(.:format)          users#create

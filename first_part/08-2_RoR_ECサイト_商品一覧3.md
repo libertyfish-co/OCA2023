@@ -1,290 +1,235 @@
+
 ## 8.2 Ruby on Rails：ECサイトの開発 商品一覧3
 
-### 8.2.1　データベース設計、多対多の関連付け
+### 8.2.1 詳細画面への遷移と削除
 
-ここからは、ECサイトプリケーションの開発を例に各実装を解説していきます。
-例題で各実装について解説し、問題を解くことによりECサイトが少しずつ完成していきます。  
-まず、この章では、ECサイトのデータベース設計の解説を行います。
-設計のために、ActiveRecord、データベース設計の基礎、多対多の関連付けについて簡単に説明します。
+今回は先ほど作成した`Post`アプリに詳細画面と削除機能を実装します。  
+まずは詳細画面を実装していきます。  
 
-### 8.2.2 ActiveRecordとは
+ルーティングの設定をしましょう。  
+```rb
+# config/routes.rb
 
-Active Recordとは、Railsに付属する、重要なライブラリの1つで、MVCのM(モデル)に相当します。
-Active Recordは、ORM (オブジェクトリレーショナルマッピング) で実装されています。
-ORMとは、簡潔に説明すると、アプリケーションが持つオブジェクトとリレーショナルデータベース(RDBMS)を繋ぐプログラミング技法です。  
-また、ActiveRecordでは、下記の仕組みが特に重要となっています。
-
-- モデルとそのデータを表す仕組み
-- モデル間の関連性を表す仕組み
-- 関連するモデルを通した階層の継承を表す仕組み
-- DBに保存する前に検証する仕組み
-- オブジェクト指向の手法でDB操作を実行する仕組み
-
-### 8.2.3 データベース設計の基礎
-
-データベース設計はとても大事で難しい部分もあります。それだけで本が1冊書けるぐらいです。ここでは詳しく解説しませんが、データベースの構成次第で、あとの機能の実装がやりにくかったり複雑になってしまうので、くれぐれも注意してください。できるかぎり、サイトで扱うもの、関連のある人、サイトの使われ方などを具体的にイメージしながら考えていきましょう。
-
-データベース設計で決めることは次の4つです。
-
-- 作業1 : アプリで扱うデータをモレなく書き出す  
-- 作業2 : データの正規化（グループ分け）をする  
-- 作業3 : 各データの型（データの種類）を決める  
-- 作業4 : 各データのフィールド名（アルファベット）を決める  
-
-ここにあげたものは、必ずしも順番にする必要はありません。いろいろ考えていくうちに他に必要なデータが見えてきたり、「こっちの名前がこうなら、あっちの名前はこうしよう」 ということが出てきます。
-サイトを利用する場面や利用する人のことを想像しながら、納得するまで考えます。可能であれば、他のプログラミング経験者の意見を聞くことをおすすめします。
-
-### 8.2.4 多対多の関連付け
-
-まず、多対多の関連付けとは、お互いのテーブルのレコード同士が複数の相手側レコードと関連付けられる関係の事です。  
-Railsで多対多の関連付けをする方法は以下の2通りがあります。
-
-- has_many :throughでの関連付け  
-2つのモデルの間に、互いのモデルのIDを保持している中間テーブル(第3のモデル)を作成して、紐付けします。
-例えば、次の[3.3-例題]のように、先生と授業の関係を表します。実際にどのように実装するかは例題を見ていきましょう。
-
-- has_and_belongs_to_manyでの関連付け  
-has_many :throughではなく、has_and_belongs_to_manyでも多対多の関連付けが可能ですが、
-今回は、has_many :throughでの関連付けで実装していきますので詳細な説明は省きます。
-has_and_belongs_to_manyはhas_many :throughと仕様が異なっているため、詳しい仕様が気になる人は調べてみましょう。
-
-### 8.2.5 ActiveRecordの代表的なメソッド
-
-ここでは、以下のモデルを例にActiveRecordの代表的なメソッドを簡潔に説明していきます。
-
-`モデル User:ユーザー`
-
-|field名|名称|型|
-|:--|:--|:--|
-|id|ID|integer|
-|name|名前|string|
-|mail_address|メールアドレス|string|
-
-`ActiveRecordの代表的なメソッド一覧`  
-※表の発行SQLは、わかりやすさのため、テーブル名は省略してカラム名のみ記述しています。
-
-|メソッド|説明|使用例|発行SQL
-|:--|:--|:--|:--
-|all|全件取得(全カラム)|User.all|SELECT * FROM users
-|select|全件取得(カラム指定)|User.select(:name)<br>User.select('name,mail_address')|SELECT name FROM users<br>SELECT name,mail_address FROM users
-|find|検索(id指定)|User.find(1)|SELECT * FROM users WHERE id = 1
-|find_by|検索(条件指定)|User.find_by(id:1)<br>User.find_by('id > 1')|SELECT \* FROM users WHERE id = 1 LIMIT 1<br>SELECT * FROM users WHERE id > 1 LIMIT 1|
-|where|検索(条件指定)|User.where(id:1)<br>User.where('id > 1')|SELECT \* FROM users WHERE id = 1<br>SELECT * FROM users WHERE id > 1
-|first|最初のデータをとる|User.first<br>User.first(2)|SELECT \* FROM users ORDER BY id ASC LIMIT 1<br>SELECT \* FROM users ORDER BY id ASC LIMIT 2
-|last|最後のデータをとる|User.last<br>User.last(2)|SELECT \* FROM users ORDER BY id DESC LIMIT 1<br>SELECT * FROM users ORDER BY id DESC LIMIT 2
-|order|ソート|User.order(:name)<br>User.order(name: :DESC)|SELECT \* FROM users ORDER BY name ASC<br>SELECT \* FROM users ORDER BY name DESC
-|limit|制限|User.limit(2)|SELECT * FROM users LIMIT 2
-
-`各メソッドの詳細`
-
-- all
-  - レコードを全件取得します
-- select
-  - カラムを指定し、レコードを取得します。引数の値がカラムとなります。
-- find
-  - 指定したidのレコードを取得します。引数の値が指定するidとなります。
-  - findは、該当するデータが見つからない場合は例外（RecordNotFound）が発生します。
-- find_by
-  - 特定のカラムの条件を指定し、該当する1件を取得します。引数の値が条件となります。
-  - find_byは該当するデータが見つからない場合は、nilを返します。
-- where
-  - 特定のカラムの条件を指定し、該当する全件を取得します。引数の値が条件となります。
-  - whereは、該当するデータが見つからない場合はからの、`ActiveRecord::Relation`を返します。
-- first
-  - レコードの最初の1件を取得します。引数を渡すと最初のn件と指定することもできます。
-- last
-  - レコードの最後の1件を取得します。引数を渡すと最後のn件と指定することもできます。
-- order
-  - レコードを引数に指定したカラムで並び変えます。デフォルトの並び順はASC(昇順)になっています。
-  - 降順で並び変える場合は`User.order(name: :DESC)`とします。
-- limit
-  - 特定のレコード件数を取得します。引数の値が最大取得行数となります。
-
-`etc`
-- ActiveRecord::Relationについて
-  - `ActiveRecord::Relation`とは、モデルオブジェクトのコレクションです。  
-  `ActiveRecord::Relation`を返す場合は、メソッドチェーンが可能ですので、  
-  例えばwhereに続いてさらにActiveRecordのメソッドを使用する事ができます。  
-  ここでは詳細を説明しませんので、気になる場合は調べてみましょう。
-
-- ?の使い方
-  - 条件に変数を使用したい場合等に、?(プレースホルダ)を使用します。  
-  変数でなくても、直接値を指定することも可能です。(冗長ですが例も記載しています。)
-
-  ``` ruby
-  name = "test"
-  User.where("name = ?", name)
-  #SELECT  "users".* FROM "users" WHERE (name = 'test')
-
-  User.where("name = ?", 'test2')
-  #SELECT  "users".* FROM "users" WHERE (name = 'test2')
-  ```
-
-### 8.2.6 例題
-
-先生と授業(科目)のテーブルを作成し、先生と授業の多対多で関連付けしていきます。
-先生は複数の授業(科目)を担当し、授業(科目)からも複数の先生が受け持っているという多対多の関連付けとして実装します。
-データベース構成は以下の通りとします。
-
-Teacher : 先生 テーブル
-
-|field名|名称|型|
-|:--|:--|:--|
-|name|名前|string|
-
-Lesson : 授業 テーブル
-
-|field名|名称|型|
-|:--|:--|:--|
-|name|授業名|string|
-
-Appointment : 出席者 テーブル（中間テーブル）
-
-|field名|名称|型|
-|:--|:--|:--|
-|teacher_id|先生|references|
-|lesson_id|授業|references|  
-
-![画像](images/08-2-6-1.png)
-
-#### ①　アプリケーションの作成
-
-まずは、例題用のRailsアプリケーションを作成します。
-
-```
-$ rails new teacher_sample
-```
-
-#### ②　Teacherモデルの作成
-
-次に必要なモデルを作成してきます。
-
-```
-$ rails generate model Teacher name:string
-Running via Spring preloader in process 1718
-      invoke  active_record
-      create    db/migrate/20170828083314_create_teachers.rb
-      create    app/models/teacher.rb
-      invoke    test_unit
-      create      test/models/teacher_test.rb
-      create      test/fixtures/teachers.yml
-```
-
-#### ③　Lessonモデルの作成
-
-```
-$ rails generate model Lesson name:string
-Running via Spring preloader in process 1754
-      invoke  active_record
-      create    db/migrate/20170828083408_create_lessons.rb
-      create    app/models/lesson.rb
-      invoke    test_unit
-      create      test/models/lesson_test.rb
-      create      test/fixtures/lessons.yml
-```
-
-#### ③　Appointmentモデルの作成
-
-中間テーブルとなるモデルです。
-teacherとlessonを参照するように設定して、モデルを生成します。
-
-```
-$ rails generate model appointment teacher:references lesson:references
-lesson:references
-Running via Spring preloader in process 1786
-      invoke  active_record
-      create    db/migrate/20170828083440_create_appointments.rb
-      create    app/models/appointment.rb
-      invoke    test_unit
-      create      test/models/appointment_test.rb
-      create      test/fixtures/appointment.yml
-
-```
-
-teacher、lessonとappointmentのモデルが作成できたので、テーブルを作成するためにマイグレーションも実行しましょう。
-
-```
-$ rails db:migrate
-== 20170828083314 CreateTeachers: migrating ===================================
--- create_table(:teachers)
-   -> 0.0014s
-== 20170828083314 CreateTeachers: migrated (0.0015s) ==========================
-
-== 20170828083408 CreateLessons: migrating ====================================
--- create_table(:lessons)
-   -> 0.0011s
-== 20170828083408 CreateLessons: migrated (0.0012s) ===========================
-
-== 20170828083440 CreateAppointments: migrating =============================
--- create_table(:appointment)
-   -> 0.0036s
-== 20170828083440 CreateAppointments: migrated (0.0037s) ====================
-
-```
-
-各モデルの関係を設定するために、以下の内容を追記してください。  
-has_many :throughは、appointmentをショートカットして、teacherもしくはlessonを参照できるようにします。
-
-`app/models/teacher.rb`
-
-```
-class Teacher < ApplicationRecord
-  has_many :appointments
-  has_many :lessons,through: :appointments
+Rails.application.routes.draw do
+  get 'posts/:id', to: 'posts#show', as: 'post' # 追加
+  get 'posts/new', to: 'posts#new', as: 'new_post'
+  get 'posts', to: 'posts#index'
+  get 'posts/:id/edit', to: 'posts#edit', as: 'edit_post'
+  post 'posts', to: 'posts#create'
+  patch 'posts/:id', to: 'posts#update', as: 'update_post'
 end
 ```
 
-`app/models/lesson.rb`
+これでルーティングの設定が完了しましたが、次の削除機能にも備えてまとめてしまいましょう。
 
-```
-class Lesson < ApplicationRecord
-  has_many :appointments
-  has_many :teachers,through: :appointments
+```rb
+# config/routes.rb
+
+Rails.application.routes.draw do
+  root 'posts#index'
+  resources :posts
 end
 ```
 
-appointmentモデルはteacherとlessonを参照するように生成したため、既に下記のソースコードとなっています。
+今回はroot_pathを設定しています。root_pathとは、トップページにあたるところを表示します。  
+<http://localhost:3000>にアクセスしてみましょう。  
+一覧画面が表示されたでしょうか。では、コントローラを設定していきましょう。  
 
-`app/models/appointment.rb`
+```rb
+class PostsController < ApplicationController
+  def index
+    @posts = Post.all
+  end
 
-```
-class Appointment < ApplicationRecord
-  belongs_to :teacher
-  belongs_to :lesson
+  def show # 追加
+    @post = Post.find(params[:id]) # 追加
+  end # 追加
+  ・
+  ・
 end
 ```
 
-### 8.2.7 問題
+前回に実装したControllerに新たにshowアクションを追加しました。さらに編集します。
 
-今回のECサイトのデータベース構成は、以下のようにします。  
-この構成通りに、モデルを作成してみましょう。本と商品は多対多の関係になることに注意して下さい。
+```rb
+class PostsController < ApplicationController
+  before_action :set_post, only: [:show, :edit, :update] # 追加
 
-Book : 本 テーブル
+  def index
+    @posts = Post.all
+  end
 
-|field名|名称|型|
-|:--|:--|:--|
-|title|タイトル|string|
-|author|著者|string|
-|published_on|出版日|date|
-|showing|商品表示|boolean|
-|price|価格|integer|
+  def show
+  end
+  ・
+  ・
+  def edit
+  end
+  ・
+  ・
+  def update
+    if @post.update(post_params)
+      redirect_to posts_path, notice: '編集が完了しました。'
+    else
+      render :edit
+    end
+  end
 
-Tag : 商品タグ テーブル
+  private
+  def set_post # 追加
+    @post = Post.find(params[:id]) # 追加
+  end # 追加
+  ・
+  ・
+end
+```
 
-|field名|名称|型|
-|:--|:--|:--|
-|name|タグ名|string|
+`before_action`を追加しました。`before_action`はアクションが実行される前に実行されるメソッドです。今回は`:show`と`:edit`、`:update`メソッドの前に実行されます。　　
+`private`メソッドにある`set_post`メソッドでは投稿のIDを使用して該当する投稿を取得し、@post インスタンス変数に格納します。共通する動作はメソッドとしてまとめて`before_action`にすることでアクション前に実行したいメソッドはこのようにまとめることができます。  
 
-Tagging : タグ付け テーブル
+`show.html.erb`を新規作成しましょう。  
+```html
+<!-- app/views/posts/show.html.erb -->
 
-|field名|名称|型|
-|:--|:--|:--|
-|book_id|本|references|
-|tag_id|商品タグ|references|
+<h2>投稿詳細</h2>
+<p><%= @post.content %></p>
+```
 
-### 8.2.8 中間テーブルへのデータ登録設定
+<http://localhost:3000/posts/1>にアクセスしてみましょう。  
+IDが1の投稿が存在していれば表示されます。もしエラーが発生してしまった場合は<http://localhost:3000/posts/new>から新規投稿を行うかIDの部分を変更して表示してみましょう。  
+![画像](images/08-2-1.png)
 
-#### (a) 解説
+次は投稿詳細画面から一覧画面へ遷移するリンクを作りましょう。  
+リンクは`link_to`メソッドを使用します。  
 
-中間テーブルは、これまで出てきたUserやBookなどのように、scaffoldでできるnewやeditのViewを用意してデータを登録・編集することはほとんどありません。最低でも、紐づいたテーブルのどちらかのデータがないと、成り立たないというのが主な理由です。中間テーブルへの登録・編集は、様々な方法があります。ここでは紙面の都合上、Railsの便利なメソッド `collection_check_boxes` を利用してシンプルに実装していきます。このメソッドを利用しない方法については、余裕があればぜひチャレンジしてみてください。
+```html
+<!-- app/views/posts/show.html.erb -->
 
+<h2>投稿詳細</h2>
+<p><%= @post.content %></p>
+<%= link_to "一覧へ", posts_path %>
+```
+
+これで一覧画面へのリンクが作成されました。  
+では、ブラウザのデベロッパーツールを表示してみましょう。`<a href="/posts">一覧へ</a>`のようになっています。  
+`link_to`はRailsのビューで使用されるヘルパーメソッドであり、HTMLのアンカータグ（`<a>`要素）を生成します。  
+
+リンクを押下して正しく遷移した場合は同様に一覧ページから詳細ページへ遷移するリンクを作成してみましょう。  
+
+![画像](images/08-2-2.png)  
+
+リンクができた場合は新たに新規投稿をしてみてください。登録された投稿内容の詳細リンクを押下したときに正しく遷移しているか上のアドレスバーから確認しましょう。  
+
+編集リンクを押下してみましょう。以下のようなエラーが発生しています。  
+![画像](images/08-2-3.png)
+
+このエラーは`update_post_path`が定義されていないのでエラーが起こります。  
+もともとのルーティングの設定では
+```rb
+# config/routes.rb
+
+patch 'posts/:id', to: 'posts#update', as: 'update_post'
+```
+としていましたが、現在のルーティングの設定は
+```rb
+# config/routes.rb
+
+resources :posts
+```
+に修正しました。そのためパスが変更されアクセスできないようになりました。  
+それではルーティングの設定を修正して編集できるようにしてみましょう。
+
+![画像](images/08-2-4.png)
+
+このように表示され、元通りに編集ができれば修正できています。  
+一部を修正したときに他の箇所が動作しなくなり、手戻りが発生していまうことがあります。拡張性や柔軟性を考えて、不要な変更を極力避け手戻りを発生させる可能性を低くしながら実装しましょう。  
+
+
+では、次は削除ボタンを実装していきます。  
+ルーティングの設定は完了しているので、Controllerの設定をしていきます。  
+```rb
+# app/controllers/posts_controller.rb
+class PostsController < ApplicationController
+  before_action :set_post, only: [:show, :edit, :update, :destroy]
+  ・
+  ・
+  def destroy
+    @post.destroy
+    redirect_to posts_path, notice: '削除が完了しました。'
+  end
+
+  private
+  ・
+  ・
+end
+```
+
+`before_action`から取得した`@post`に対して`destroy`メソッドを使用して、データベースからレコードを削除します。  
+
+続いてView側です。今回は一覧ページから削除できるようにしましょう。  
+削除ボタンには`link_to`ヘルパーメソッドや`button_to`ヘルパーメソッドを使用してリンクやボタンを生成し、削除アクションが実行されるようにします。  
+```html
+<!-- app/views/posts/index.html.erb -->
+  ・
+  ・
+  <tbody>
+    <% @posts.each do |post| %>
+      <tr>
+        <td><%= post.content %></td>
+        <td><%= link_to '詳細', post_path(post) %></td>
+        <td><%= link_to '編集', edit_post_path(post) %></td>
+        <td><%= link_to '削除', post_path(post), data: {turbo_method: :delete, turbo_confirm: "本当に削除しますか？"} %></td>　<!-- 追加 -->
+      </tr>
+    <% end %>
+  </tbody>
+  ・
+  ・
+```
+
+ユーザーが誤って削除しないように、`data-confirm`属性を使用して削除ボタンを押したときに確認メッセージを表示しています。  
+
+データベースからデータを削除する際には物理削除と論理削除があります。
+
+1. 物理削除：データベースからレコードを完全に削除する方法。
+            ※ データベースから削除されたレコードは、永久に失われます。物理削除は、不要なデータをシステムから完全に排除する場合に使用されます。削除されたデータは回復不可能であるため、慎重に使用する必要があります。
+
+2. 論理削除：データベース内のレコードの削除フラグを立てることで、削除をシミュレートする方法。
+            ※ 削除フラグを立てたレコードは、データベース内に残りますが、システムによっては通常の検索やクエリの対象から除外されます。論理削除は、削除されたデータの履歴を保持したい場合や、削除したデータを後で復元したい場合に役立ちます。
+
+##### 論理削除の重要性
+- 履歴の保持：削除されたデータの履歴を維持
+- データの復元：論理削除されたデータはデータベース内に残っているため、後で復元することができる
+- データの完全性：データベース内の異なるテーブルにあるデータ間の関連性を維持
+
+
+![画像](images/08-2-5.png)
+![画像](images/08-2-6.png)
+
+選択した投稿が正しく削除されていれば完了です。  
+
+これでCRUD機能の基本的な処理が実装できるようになりました。  
+CRUDはデータベースに対して行う基本的な処理で以下の4つの操作を指します。
+1. Create(作成)：新しいデータをデータベースに追加します。
+2. Read(読み取り)：データベースからデータを取得します。
+3. Update (更新)：既存のデータを変更します。
+4. Delete (削除)：データベースからデータを削除します。
+
+これらの操作は、データベースを操作するための基本的な機能であり、ほとんどのアプリケーションで必要とされます。  
+
+リクエストと対応するコントローラーアクションでの処理は以下の通りです。
+
+- Create：`POST`リクエストを使用して新しいデータを作成するためのアクション
+- Read：`GET`リクエストを使用してデータを表示するためのアクション
+- Update：`PATCH`または`PUT`リクエストを使用して既存のデータを更新するためのアクション
+- Delete：`DELETE`リクエストを使用してデータを削除するためのアクション
+
+#### 練習
+新たにアプリを作成して、投稿機能を実装してください。  
+作成時には以下の条件で実装してください。  
+- データベースに保存されるカラムは`タイトル`と`投稿内容`の2種類を実装する
+- `rails g model`を使って作成する
+- 一覧ページ、詳細ページ、新規作成ページ、編集ページを実装する
+- 一覧ページには詳細ページへのリンクを実装する
+- 詳細ページへのリンクはタイトルにする
+- 詳細ページには編集画面へのリンクと削除ボタン、一覧画面へのリンクを実装する
+- 削除ボタンは`button_to`メソッドにする

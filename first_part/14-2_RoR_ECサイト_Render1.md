@@ -32,25 +32,25 @@ GitHubに登録したメールアドレスが正しければ`COMPLETE SIGN UP`�
 まずはアプリ内のGemfileとデータベースの設定を変更します。Renderでは、デフォルトのデータベースはPostgreSQLです。
 PostgreSQLを使用するためのgemを追加します。
 
-`Gemfile`
-``` ruby
-    ruby '2.7.7'
-         ・
-         ・
-    # Use sqlite3 as the database for Active Record
-    # gem 'sqlite3', '~> 1.4' #コメントアウト
-         ・
-         ・
-    group :development, :test do
-      gem 'sqlite3', '~> 1.4' # 追加
-      # Call 'byebug' anywhere in the code to stop execution and get a debugger console
-      gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
-    end
-         ・
-         ・
-    group :production do # 追加
-      gem 'pg', '~> 1.4' # 追加
-    end # 追加
+```rb
+# Gemfile
+ruby "3.2.4"
+      ・
+      ・
+# Use sqlite3 as the database for Active Record
+# gem "sqlite3", "~> 1.4" # コメントアウト
+      ・
+      ・
+group :development, :test do
+  gem "sqlite3", "~> 1.4" # 追加
+  # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
+  gem "debug", platforms: %i[ mri windows ]
+end
+      ・
+      ・
+group :production do # 追加
+  gem 'pg', '~> 1.5.6' # 追加
+end # 追加
 ```
 
 Gemfileに"development"、"test"、"production"という単語が出てきましたが、それぞれは以下の通りです。
@@ -60,15 +60,21 @@ Gemfileに"development"、"test"、"production"という単語が出てきまし
 
 developmentモードとtestモードではこのままSQLiteを利用しますので、元から存在する`gem 'sqlite3'`はコメントアウトし`group :development, :test do`内へ移動させます。  
 `group :production`はデフォルトで書かれていないので追加します。  
+今回は`group :production`のgemはインストールしたくないので`bundle config set --local without 'production'`のコマンドで`bundle install`したときの設定を変更します。
 Gemfileに追加出来たら以下のコマンドを実行します。
-```ターミナル
-bundle install --without production
-bundle lock --add-platform x86_64-linux
+
+```sh
+$ bundle config set --local without 'production'
+$ bundle install
+
+$ bundle lock --add-platform x86_64-linux
 ```
 
 `config/database.yml` を開いて、production環境のデータベース指定を変更してください。
 
-``` ruby
+```rb
+# config/database.yml
+
 production:
   <<: *default
   database: db/production.sqlite3 #削除

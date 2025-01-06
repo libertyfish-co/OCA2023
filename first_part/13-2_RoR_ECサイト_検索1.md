@@ -16,7 +16,7 @@ Webアプリケーション開発では、このような検索機能を実装�
 検索条件を引数にして`ransack`メソッドを呼び出すと`Ransack::Search`オブジェクトが返ってきます。
 そのオブジェクトに対して`result`メソッドを呼び出すことで検索結果を取得できます。
 
-```
+```rb
 def index
   @q = User.ransack params[:q]
   @users = @q.result
@@ -26,7 +26,7 @@ end
 検索条件は画面から入力します。
 その画面のフォームを作成するために`ransack`では`search_form_for`というViewHelperが準備されています。
 
-```
+```html
 <%= search_form_for @q do |f| %>
   <%= f.text_field :name_cont %>
   <%= f.submit %>

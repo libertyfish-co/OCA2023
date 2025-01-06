@@ -26,99 +26,106 @@ rackでArrayやHashに整形されたあとは、ActionDispatch::Request::Utils�
 
 ### 9.5.3 Active Storageを利用した画像アップロード(Rails5.2から)
 
-Active StorageはRails 5.2から利用できるgemです。
+Active StorageはRails5.2から利用できるgemです。簡単に画像や動画などのファイルをアップロードし、クラウドストレージやローカルストレージなどに保存することができます。
 
 #### Active Storage
 
  1. Active Storageを導入するために新規プロジェクトを作成します
-    ```bash
-    $ rails new storage
-    ```
+      ```sh
+      $ rails new storage
+      $ cd storage
+      ```
  2. マイグレーションファイルを作成します
-    ```bash
-    $ cd storage
-    $ rails active_storage:install
-    ```
-    - `active_storage_blobs` テーブルと `active_storage_attachments` テーブルのマイグレーションファイルが作成されます
+      ```sh
+      $ rails active_storage:install
+      ```
+      - `active_storage_blobs` テーブルと `active_storage_attachments` テーブルのマイグレーションファイルが作成されます
 
  3. マイグレーションファイルの内容をデータベースに反映する
-    ```bash
-    $ rails db:migrate
-    ```
+      ```sh
+      $ rails db:migrate
+      ```
 
  4. 雛形を作成します
 
     Userモデルにnameカラムを設定
-    ```bash
-    $ rails generate scaffold user name:string
-    ```
+      ```sh
+      $ rails g scaffold user name:string
+      ```
 
  5. Userモデルをデータベースに反映します
-    ```bash
-    $ rails db:migrate
-    ```
+      ```sh
+      $ rails db:migrate
+      ```
 
  6. テーブル同士の関連付けを行います
 
- - app/models/user.rb
-
-    ```ruby
-    class User < ApplicationRecord
+      ```rb
+      # app/models/user.rb
+      
+      class User < ApplicationRecord
       has_one_attached :photo
-    end
-    ```
+      end
+      ```
  7. Strong Parameterを設定します
 
- - app/controllers/users_controller.rb
-
-    ```ruby
-    def user_params
+      ```rb
+      # app/controllers/users_controller.rb
+      ・
+      ・
+      private
+      ・
+      ・
+      def user_params
       params.require(:user).permit(:name, :photo)
-    end
-    ```
+      end
+      ```
  8. viewファイルに画像をアップロードする項目を追加します
 
- - app/views/users/_form.html.erb
+      ```html
+      <!-- app/views/users/_form.html.erb -->
 
-    ```html
-    <%= form_with(model: user, local: true) do |form| %>
-      (省略)
+      <%= form_with(model: user, local: true) do |form| %>
+      ・
+      ・
       <div class="field">
-        <%= form.label :name %>
-        <%= form.text_field :name %>
+         <%= form.label :name %>
+         <%= form.text_field :name %>
       </div>
 
       <div class="field">
-        <%= form.file_field :photo %>
+         <%= form.file_field :photo %>
       </div>
 
       <div class="actions">
          <%= form.submit %>
       </div>
-      (省略)
-    <% end %>
-    ```
+      ・
+      ・
+      <% end %>
+      ```
 
  9. ユーザーの詳細画面にアップロードした画像を表示するよう設定します
 
- - app/views/users/show.html.erb
 
-    ```html
-   (省略)
-    <p>
-      <strong>Name:</strong>
-      <%= @user.name %>
-    </p>
+      ```html
+      <!-- app/views/users/show.html.erb -->
+      ・
+      ・
+      <p>
+         <strong>Name:</strong>
+         <%= @user.name %>
+      </p>
 
-    <p>
-      <strong>Photo:</strong>
-      <% if @user.photo.attached? %>
-        <%= image_tag @user.photo %>
-      <% end %>
-    </p>
-
-   (省略)
-    ```
+      <p>
+         <strong>Photo:</strong>
+         <% if @user.photo.attached? %>
+         <%= image_tag @user.photo %>
+         <% end %>
+      </p>
+      ・
+      ・
+      ```
 
     ※実際に画像をアップロードして確認してみましょう。
 
