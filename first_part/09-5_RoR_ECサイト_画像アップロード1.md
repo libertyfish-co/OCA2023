@@ -50,7 +50,7 @@ Active StorageはRails5.2から利用できるgemです。簡単に画像や動�
 
     Userモデルにnameカラムを設定
       ```sh
-      $ rails g scaffold user name:string
+      $ rails g scaffold User name:string
       ```
 
  5. Userモデルをデータベースに反映します
@@ -64,7 +64,7 @@ Active StorageはRails5.2から利用できるgemです。簡単に画像や動�
       # app/models/user.rb
       
       class User < ApplicationRecord
-      has_one_attached :photo
+        has_one_attached :photo
       end
       ```
  7. Strong Parameterを設定します
@@ -77,7 +77,7 @@ Active StorageはRails5.2から利用できるgemです。簡単に画像や動�
       ・
       ・
       def user_params
-      params.require(:user).permit(:name, :photo)
+        params.require(:user).permit(:name, :photo)
       end
       ```
  8. viewファイルに画像をアップロードする項目を追加します

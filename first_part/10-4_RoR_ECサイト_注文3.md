@@ -18,7 +18,7 @@ ECサイトに注文機能を実装しましょう。
 |field名|名称|型|
 |:--|:--|:--|
 |id|ID|integer|
-|product_id|商品ID|integer|
+|book_id|商品ID|integer|
 |count|個数|integer|
 |address|届け先|text|
 
