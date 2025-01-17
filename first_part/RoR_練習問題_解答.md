@@ -915,7 +915,6 @@ rails new sns_site
 rails cd sns_site
 
 # gemfile を編集してから
-bundle install
 rails g devise:install
 
 # Deviseでモデルの作成
