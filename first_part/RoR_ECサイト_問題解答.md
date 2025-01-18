@@ -623,6 +623,16 @@ $ rails generate devise:views
 
 ### (9)
 
+```bash
+# active_storageのインストール
+rails active_storage:install
+
+# gemfileに必要なgemを記入後
+bundle install
+```
+
+
+
 
 <br>
 
