@@ -2,6 +2,32 @@
 
 ### (1) 
 
+```sh
+rails new ec_site
+
+# gemfile を編集してから
+bundle install
+rails g devise:install
+
+# Deviseでモデルの作成
+rails g devise User
+rails g scaffold Book
+rails g scaffold Tag
+rails g scaffold Tagging
+
+# マイグレーションファイルを編集してから
+rails db:migrate
+
+# コントローラーの作成
+rails g devise:controllers Users
+
+# ビューの作成
+rails g devise:views
+touch app/views/top/top.html.erb
+touch app/views/mypage/show.html.erb
+touch app/views/mypage/edit.html.erb
+```
+
 `config/application.rb` の中に次の1行を追加することで設定できます。  
 日本国内では `Tokyo` の他に `Osaka` と `Sapporo` も設定できます。
 
