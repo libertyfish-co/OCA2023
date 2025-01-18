@@ -1,6 +1,15 @@
 ## Ruby on Rails：練習問題_解答
 
-#### この解答は編集箇所のみ記述しております。
+### 目次
+<details>
+
+ - [(1)](#1)
+ - [(2)](#2)
+ - [(3)](#3)
+ - [(4)](#4)
+ - [(5)](#5)
+
+</details>
 
 ### (1)
 <details>
@@ -928,7 +937,7 @@ rails db:migrate
 # コントローラーの作成
 rails g devise:controllers Users
 rails g controller Top top
-rails g controller Mypages show edit update
+rails g controller Mypages
 
 # ビューの作成
 rails g devise:views
@@ -939,7 +948,7 @@ touch app/views/mypage/edit.html.erb
 
 ---
 
-`Gemfile`
+`/Gemfile`
 ```gemfile
 # 省略
 
@@ -948,7 +957,7 @@ gem 'devise' # 追加
 
 ---
 
-`xxxxxxxxxxxxxx_devise_create_users.rb`
+`/db/migrate/xxxxxxxxxxxxxx_devise_create_users.rb`
 ```rb
 # frozen_string_literal: true
 
@@ -1824,3 +1833,416 @@ end
 
 <br>
 
+### (6)
+
+<details>
+
+```bash
+rails new photo_post
+cd photo_post
+
+# active_storageのインストール
+rails active_storage:install
+
+# gemfileに必要なgemを記入後
+bundle install
+
+# deviseの導入
+rails g devise:install
+rails g devise User
+
+# postモデルの作成
+rails g scaffold Post tilte:string content:text image:string user_id:integer
+
+# migrateファイルを編集後
+rails db:migrate
+
+# コントローラーの作成
+rails g devise:controllers Users
+rails g controller Mypages show edit update
+
+# ビューの作成
+rails g devise:views
+```
+
+---
+
+`Gemfile`
+```rb
+# 省略
+
+# 追加
+gem 'devise'            # ユーザー認証
+gem 'image_processing'  # 画像のリサイズ
+```
+
+---
+
+`/config/routes.rb`
+```rb
+Rails.application.routes.draw do
+  # 削除　ここから
+  get 'mypages/show'
+  get 'mypages/edit'
+  get 'mypages/update'
+  # 削除　ここまで
+  resources :mypages, only: [:show, :edit, :update]                     # 追加
+  resources :posts
+  devise_for :users
+  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
+
+  # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
+  # Can be used by load balancers and uptime monitors to verify that the app is live.
+  get "up" => "rails/health#show", as: :rails_health_check
+
+  # Defines the root path route ("/")
+  # root "posts#index"
+end
+
+
+```
+
+
+---
+
+`/db/migrate/xxxxxxxxxxxxxx_devise_create_users.rb`
+```rb
+# frozen_string_literal: true
+
+class DeviseCreateUsers < ActiveRecord::Migration[7.1]
+  def change
+    create_table :users do |t|
+      ## Database authenticatable
+      t.string :email,              null: false, default: ""
+      t.string :encrypted_password, null: false, default: ""
+      # 追加　ここから
+      t.string :name
+      t.string :avatar
+      # 追加ここまで
+
+      ## Recoverable
+      t.string   :reset_password_token
+      t.datetime :reset_password_sent_at
+
+      ## Rememberable
+      t.datetime :remember_created_at
+
+      ## Trackable
+      # #を外す　ここから
+      t.integer  :sign_in_count, default: 0, null: false
+      t.datetime :current_sign_in_at
+      t.datetime :last_sign_in_at
+      t.string   :current_sign_in_ip
+      t.string   :last_sign_in_ip
+      # #を外す　ここまで
+
+      # 省略
+  end
+end
+
+```
+
+---
+
+`/app/models/user.rb`
+```rb
+class User < ApplicationRecord
+  # Include default devise modules. Others available are:
+  # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
+  devise :database_authenticatable, :registerable,
+         :recoverable, :rememberable, :validatable
+
+  # 追加　ここから
+  has_many :posts, dependent: :destroy
+  has_one_attached :avatar
+  validates :name, presence: true,  length: { maximum: 20 }, uniqueness: true
+  # 追加　ここまで
+  
+end
+```
+
+---
+
+`/app/models/post.rb`
+```rb
+class Post < ApplicationRecord
+
+    # 追加　ここから
+    belongs_to :user
+    has_one_attached :image
+    validates :tilte, presence: true, length: { maximum: 20 }
+    validates :content, length: { maximum: 200 }
+    # 追加　ここまで
+
+end
+```
+
+---
+
+
+`/app/controllers/application_controller.rb`
+```rb
+class ApplicationController < ActionController::Base
+ 
+  # 追加　ここから
+  before_action :configure_permitted_parameters, if: :devise_controller?
+
+  def after_sign_in_path_for(resource)
+      mypage_path(resource)
+  end
+
+  def after_sign_out_path_for(resource)
+      root_path
+  end
+
+  protected
+
+  def configure_permitted_parameters
+    devise_parameter_sanitizer.permit(:sign_up, keys: [:name, :email])
+  end
+  # 追加　ここまで
+
+end
+```
+
+---
+
+`/app/controllers/users/registrations_controller.rb`
+```rb
+# frozen_string_literal: true
+
+class Users::RegistrationsController < Devise::RegistrationsController
+ 
+ # 省略
+
+  # The path used after sign up.
+  # #を外す　ここから
+  def after_sign_up_path_for(resource)
+    mypage_path(resource) # 編集
+  end
+  # #を外す　ここまで
+
+  # The path used after sign up for inactive accounts.
+  # def after_inactive_sign_up_path_for(resource)
+  #   super(resource)
+  # end
+end
+```
+
+---
+
+`/app/controllers/posts_controller.rb`
+```rb
+class PostsController < ApplicationController
+  before_action :authenticate_user! # 追加
+  before_action :set_post, only: %i[ show edit update destroy ]
+
+  # GET /posts or /posts.json
+  def index
+    @posts = Post.all
+  end
+
+  # GET /posts/1 or /posts/1.json
+  def show
+  end
+
+  # GET /posts/new
+  def new
+    @post = Post.new
+  end
+
+  # GET /posts/1/edit
+  def edit
+  end
+
+  # POST /posts or /posts.json
+  def create
+    @post = Post.new(post_params)
+    @post.user_id = current_user.id  # 追加
+
+    respond_to do |format|
+      if @post.save
+        format.html { redirect_to @post, notice: "投稿しました" } # 編集
+        format.json { render :show, status: :created, location: @post }
+      else
+        format.html { render :new, status: :unprocessable_entity }
+        format.json { render json: @post.errors, status: :unprocessable_entity }
+      end
+    end
+  end
+
+  # PATCH/PUT /posts/1 or /posts/1.json
+  def update
+    respond_to do |format|
+      if @post.update(post_params)
+        format.html { redirect_to @post, notice: "投稿を更新しました" } # 編集
+        format.json { render :show, status: :ok, location: @post }
+      else
+        format.html { render :edit, status: :unprocessable_entity }
+        format.json { render json: @post.errors, status: :unprocessable_entity }
+      end
+    end
+  end
+
+  # DELETE /posts/1 or /posts/1.json
+  def destroy
+    @post.destroy!
+
+    respond_to do |format|
+      format.html { redirect_to posts_path, status: :see_other, notice: "投稿を削除しました" } # 編集
+      format.json { head :no_content }
+    end
+  end
+
+  private
+    # Use callbacks to share common setup or constraints between actions.
+    def set_post
+      @post = Post.find(params[:id])
+    end
+
+    # Only allow a list of trusted parameters through.
+    def post_params
+      params.require(:post).permit(:title, :comment, :image)
+    end
+end
+```
+
+
+---
+
+`/app/controllers/mypage_controller.rb`
+```rb
+class MypagesController < ApplicationController
+  before_action :authenticate_user! # 追加
+
+  def show
+    @user = User.find(params[:id]) # 追加
+  end
+
+  def edit
+    # 追加　ここから
+    @user = current_user
+    if @user.id != current_user.id
+      redirect_to mypage_path(current_user)
+    end
+    # 追加　ここまで
+  end
+
+  def update
+    # 追加　ここから
+    user = User.find(params[:id])
+    user.update(user_params)
+    redirect_to mypage_path(user.id)
+    # 追加　ここまで
+  end
+
+  # 追加　ここから
+  private
+
+  def user_params
+    params.require(:user).permit(:name, :email, :content)
+  end
+  # 追加　ここまで
+end
+```
+
+---
+
+`/app/views/devise/registrations/new.html.erb`
+
+```html
+<h2>サインアップ</h2> <!-- 編集 -->
+
+<%= form_with model: @user, url: registration_path(resource_name) do |f| %> <!-- 編集 -->
+  <%= render "devise/shared/error_messages", resource: resource %>
+  
+  <!-- 追加　ここから -->
+  <div class="field">
+    <%= f.label :名前 %><br />
+    <%= f.text_field :name, autofocus: true, autocomplete: "name" %>
+  </div>
+  <!-- 追加　ここまで -->
+
+  <div class="field">
+    <%= f.label :メールアドレス %><br /> <!-- 編集 -->
+    <%= f.email_field :email, autocomplete: "email" %> <!-- 編集 -->
+  </div>
+
+  <div class="field">
+    <%= f.label :アイコン画像 %><br />
+    <%= f.field_field :avatar, autocomplete: "avatar" %>
+  </div>
+
+  <div class="field">
+    <%= f.label :パスワード %> <!-- 編集 -->
+    <% if @minimum_password_length %>
+      <em>(<%= @minimum_password_length %> characters minimum)</em>
+    <% end %><br />
+    <%= f.password_field :password, autocomplete: "new-password" %>
+  </div>
+
+  <div class="field">
+    <%= f.label :パスワードの確認 %><br /> <!-- 編集 -->
+    <%= f.password_field :password_confirmation, autocomplete: "new-password" %>
+  </div>
+
+  <div class="actions">
+    <%= f.submit "サインアップ" %> <!-- 編集 -->
+  </div>
+<% end %>
+
+<%= render "devise/shared/links" %>
+```
+
+---
+
+`/app/views/devise/shared/_links.html.erb`
+```html
+<%- if controller_name != 'sessions' %>
+  <%= link_to "ログイン", new_session_path(resource_name) %><br /> <!-- 編集 --> 
+<% end %>
+
+<%- if devise_mapping.registerable? && controller_name != 'registrations' %>
+  <%= link_to "サインアップ", new_registration_path(resource_name) %><br /> <!-- 編集 -->
+<% end %>
+
+<%- if devise_mapping.recoverable? && controller_name != 'passwords' && controller_name != 'registrations' %>
+  <%= link_to "パスワードをお忘れですか?", new_password_path(resource_name) %><br /> <!-- 編集 -->
+<% end %>
+
+<!-- 省略 --> 
+```
+
+---
+
+`/app/views/mypages/show.html.erb`
+```html
+<h1>マイページ</h1> <!-- 編集 -->
+<p>Find me in app/views/mypages/show.html.erb</p> <!-- 削除 -->
+
+<!-- 追加　ここから -->
+<div>
+
+  <p>
+    <strong>名前:</strong>
+    <%= @user.name %>
+  </p>
+
+  <p>
+    <strong>メールアドレス:</strong>
+    <%= @user.email %>
+  </p>
+
+  <p>
+    <strong>アイコン画像:</strong>
+    <%= @user.avatar %>
+  </p>
+
+</div>
+<!-- 追加　ここまで -->
+
+```
+
+`/app/views/mypages/update.html.erb`　を削除
+
+</details>
