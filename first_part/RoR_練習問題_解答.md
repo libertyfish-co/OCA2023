@@ -1463,7 +1463,7 @@ end
   <!-- 省略 -->
 
   <body>
-    <!-- 追加　ここから -->
+    <!-- 追加 ここから -->
     <header class="header display-f">
       <% if user_signed_in? %>
         <div class="width-200 text-align-c padding-l-15p">
@@ -1863,6 +1863,9 @@ rails g controller Mypages show edit update
 
 # ビューの作成
 rails g devise:views
+
+# 不必要なビューの削除
+rm app/views/mypages/update.html.erb
 ```
 
 ---
@@ -1975,6 +1978,26 @@ class Post < ApplicationRecord
     # 追加　ここまで
 
 end
+```
+
+---
+
+`/config/initializers/devise.rb`
+```rb
+  # 省略
+
+  # ==> Configuration for any authentication mechanism
+  # Configure which keys are used when authenticating a user. The default is
+  # just :email. You can configure it to use [:username, :subdomain], so for
+  # authenticating a user, both parameters are required. Remember that those
+  # parameters are used only when authenticating and not when retrieving from
+  # session. If you need permissions, you should implement that in a before filter.
+  # You can also supply a hash where the value is a boolean determining whether
+  # or not authentication should be aborted when the value is not present.
+  config.authentication_keys = [:name] # emailから変更
+
+  # 省略
+
 ```
 
 ---
@@ -2151,48 +2174,87 @@ end
 `/app/views/devise/registrations/new.html.erb`
 
 ```html
-<h2>サインアップ</h2> <!-- 編集 -->
+<div class="padding-l-15p"> <!-- 追加 -->
+  <h2>サインアップ</h2> <!-- 編集 -->
 
-<%= form_with model: @user, url: registration_path(resource_name) do |f| %> <!-- 編集 -->
-  <%= render "devise/shared/error_messages", resource: resource %>
-  
-  <!-- 追加　ここから -->
-  <div class="field">
-    <%= f.label :名前 %><br />
-    <%= f.text_field :name, autofocus: true, autocomplete: "name" %>
-  </div>
-  <!-- 追加　ここまで -->
+  <%= form_with model: @user, url: registration_path(resource_name) do |f| %> <!-- 編集 -->
+    <%= render "devise/shared/error_messages", resource: resource %>
+    
+    <!-- 追加　ここから -->
+    <div class="field">
+      <%= f.label :名前 %><br />
+      <%= f.text_field :name, autofocus: true, autocomplete: "name" %>
+    </div>
+    <!-- 追加　ここまで -->
 
-  <div class="field">
-    <%= f.label :メールアドレス %><br /> <!-- 編集 -->
-    <%= f.email_field :email, autocomplete: "email" %> <!-- 編集 -->
-  </div>
+    <div class="field">
+      <%= f.label :メールアドレス %><br /> <!-- 編集 -->
+      <%= f.email_field :email, autocomplete: "email" %> <!-- 編集 -->
+    </div>
 
-  <div class="field">
-    <%= f.label :アイコン画像 %><br />
-    <%= f.field_field :avatar, autocomplete: "avatar" %>
-  </div>
+    <div class="field">
+      <%= f.label :アイコン画像 %><br /> <!-- 編集 -->
+      <%= f.file_field :avatar, autocomplete: "avatar" %> <!-- 編集 -->
+    </div>
 
-  <div class="field">
-    <%= f.label :パスワード %> <!-- 編集 -->
-    <% if @minimum_password_length %>
-      <em>(<%= @minimum_password_length %> characters minimum)</em>
-    <% end %><br />
-    <%= f.password_field :password, autocomplete: "new-password" %>
-  </div>
+    <div class="field">
+      <%= f.label :パスワード %> <!-- 編集 -->
+      <% if @minimum_password_length %>
+        <em>(<%= @minimum_password_length %> characters minimum)</em>
+      <% end %><br />
+      <%= f.password_field :password, autocomplete: "new-password" %>
+    </div>
 
-  <div class="field">
-    <%= f.label :パスワードの確認 %><br /> <!-- 編集 -->
-    <%= f.password_field :password_confirmation, autocomplete: "new-password" %>
-  </div>
+    <div class="field">
+      <%= f.label :パスワードの確認 %><br /> <!-- 編集 -->
+      <%= f.password_field :password_confirmation, autocomplete: "new-password" %>
+    </div>
 
-  <div class="actions">
-    <%= f.submit "サインアップ" %> <!-- 編集 -->
-  </div>
-<% end %>
+    <div class="actions">
+      <%= f.submit "サインアップ" %> <!-- 編集 -->
+    </div>
+  <% end %>
 
-<%= render "devise/shared/links" %>
+  <%= render "devise/shared/links" %>
+</div> <!-- 追加 -->
 ```
+
+---
+
+`/app/views/devise/sessions/new.html.erb`
+```html
+<div class="padding-l-15p"> <!-- 追加 -->
+
+  <h2>ログイン</h2> <!-- 編集 -->
+
+  <%= form_with model: @user, url: session_path(resource_name) do |f| %>  <!-- 編集 -->
+    <div class="field">
+      <%= f.label :名前 %><br /> <!-- 編集 -->
+      <%= f.email_field :name, autofocus: true, autocomplete: "name" %> <!-- 編集 -->
+    </div>
+
+    <div class="field">
+      <%= f.label :パスワード %><br /> <!-- 編集 -->
+      <%= f.password_field :password, autocomplete: "current-password" %>
+    </div>
+
+    <% if devise_mapping.rememberable? %>
+      <div class="field">
+        <%= f.check_box :remember_me %>
+        <%= f.label :ログイン状態を保持 %> <!-- 編集 -->
+      </div>
+    <% end %>
+
+    <div class="actions">
+      <%= f.submit "ログイン" %> <!-- 編集 -->
+    </div>
+  <% end %>
+
+  <%= render "devise/shared/links" %>
+
+</div> <!-- 追加 -->
+```
+
 
 ---
 
@@ -2217,32 +2279,310 @@ end
 
 `/app/views/mypages/show.html.erb`
 ```html
-<h1>マイページ</h1> <!-- 編集 -->
-<p>Find me in app/views/mypages/show.html.erb</p> <!-- 削除 -->
+<div class="padding-l-15p"> <!-- 追加 -->
 
+  <h1>マイページ</h1> <!-- 編集 -->
+
+<!-- 追加 ここから -->
+  <div>
+    
+    <p>
+      <strong>名前</strong>： <!-- 編集 -->
+      <%= @user.name %>
+    </p>
+
+    <p>
+      <strong>メールアドレス</strong>： <!-- 編集 -->
+      <%= @user.email %>
+    </p>
+
+    <p>
+      <strong class="vertical-align-t">アイコン画像</strong> <!-- 編集 -->
+      <!-- 追加　ここから -->
+      <% if @user.avatar.attached? %>
+        <%= image_tag @user.avatar, size: "300x300" %>
+      <% else %>
+        <%= image_tag 'NoImage.png', size: "300x300" %>
+      <% end %>
+      <!-- 追加　ここまで -->
+    </p>
+
+  </div>
+
+  <%= link_to "編集", edit_mypage_path(@user) %> <!-- 編集 -->
+
+</div>
+<!-- 追加 ここまで -->
+
+```
+
+---
+
+`/app/views/mypages/edit.html.erb`
+```html
 <!-- 追加　ここから -->
-<div>
+<div class="padding-l-15p">
 
-  <p>
-    <strong>名前:</strong>
-    <%= @user.name %>
-  </p>
+  <h1>ユーザー情報編集</h1>
+  <%= form_with model: @user, url: mypage_path do |form| %>
+    <% if @user.errors.any? %>
+      <div style="color: red">
+        <h2><%= pluralize(@user.errors.count, "error") %> prohibited this user from being saved:</h2>
+  
+        <ul>
+          <% @user.errors.each do |error| %>
+            <li><%= error.full_message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+    
+    <div>
+      <%= form.label :名前, style: "display: block" %>
+      <%= form.text_field :name %>
+    </div>
+  
+    <div>
+      <%= form.label :メールアドレス, style: "display: block" %>
+      <%= form.email_field :email %>
+    </div>
+    
+    <div>
+      <%= form.label :アイコン画像, style: "display: block" %>
+      <%= form.file_field :avatar %>
+    </div>
+    
+    <br />
 
-  <p>
-    <strong>メールアドレス:</strong>
-    <%= @user.email %>
-  </p>
+    <div>
+      <%= form.submit '更新' %>
+    </div>
 
-  <p>
-    <strong>アイコン画像:</strong>
-    <%= @user.avatar %>
-  </p>
+    <br />
 
+    <div>
+      <%= link_to "マイページへ戻る", mypage_path(@user) %>
+    </div>
+  <% end %>
+  
 </div>
 <!-- 追加　ここまで -->
 
 ```
 
-`/app/views/mypages/update.html.erb`　を削除
+---
+
+`/app/views/posts/new.html.erb`
+```html
+<div class="padding-l-15p"> <!-- 追加 -->
+
+  <h1>新規投稿</h1> <!-- 編集 -->
+
+  <%= render "form", post: @post %>
+
+  <br>
+
+  <div>
+    <%= link_to "投稿一覧へ戻る", posts_path %> <!-- 編集 -->
+  </div>
+
+</div> <!-- 追加 -->
+```
+
+---
+
+`/app/views/posts/index.html.erb`
+```html
+<div class="padding-l-15p"> <!-- 追加 -->
+
+  <p style="color: green"><%= notice %></p>
+
+  <h1>投稿一覧</h1> <!-- 編集 -->
+
+  <div id="posts">
+    <% @posts.each do |post| %>
+      <%= render post %> <!-- 削除 -->
+
+      <div id="<%= dom_id post %>">
+        <p>
+          <strong>タイトル:</strong> <!-- 編集 -->
+          <%= post.tilte %>
+        </p>
+
+        <p>
+          <strong>投稿内容:</strong> <!-- 編集 -->
+          <%= post.content %>
+        </p>
+
+        <p>
+          <strong class="vertical-align-t">画像</strong> <!-- 編集 -->
+          <!-- 追加　ここから -->
+          <% if post.image.attached? %>
+            <%= image_tag post.image, size: "300x300" %>
+          <% else %>
+            <%= image_tag 'NoImage.png', size: "300x300" %>
+          <% end %>
+          <!-- 追加　ここまで -->
+        </p>
+
+      </div>
+      <p>
+        <%= link_to "投稿詳細", post %> <!-- 編集 -->
+      </p>
+    <% end %>
+  </div>
+
+  <%= link_to "新規投稿", new_post_path %> <!-- 編集 -->
+
+</div>
+```
+
+---
+
+`/app/views/posts/show.html.erb`
+```html
+<div class="padding-l-15p"> <!-- 編集 -->
+
+  <h1>投稿詳細</h1> <!-- 追加 -->
+
+  <p style="color: green"><%= notice %></p>
+
+  <%= render @post %>
+
+  <div>
+    <%= link_to "投稿の編集", edit_post_path(@post) %> | <!-- 編集 -->
+    <%= link_to "投稿一覧へ戻る", posts_path %> <!-- 編集 -->
+
+    <%= button_to "投稿削除", @post, method: :delete %> <!-- 編集 -->
+  </div>
+
+</div>
+```
+
+---
+
+---
+
+`/app/views/posts/_post.html.erb`
+```html
+<div id="<%= dom_id post %>">
+  <p>
+    <strong>タイトル:</strong> <!-- 編集 -->
+    <%= post.tilte %>
+  </p>
+
+  <p>
+    <strong>投稿内容:</strong> <!-- 編集 -->
+    <%= post.content %>
+  </p>
+
+  <p>
+    <strong class="vertical-align-t">画像</strong> <!-- 編集 -->
+    <!-- 追加　ここから -->
+    <% if post.image.attached? %>
+      <%= image_tag post.image, size: "600x600" %>
+    <% else %>
+      <%= image_tag 'NoImage.png', size: "200x200" %>
+    <% end %>
+    <!-- 追加　ここまで -->
+  </p>
+
+</div>
+```
+
+---
+
+``
+```css
+/*
+ * This is a manifest file that'll be compiled into application.css, which will include all the files
+ * listed below.
+ *
+ * Any CSS (and SCSS, if configured) file within this directory, lib/assets/stylesheets, or any plugin's
+ * vendor/assets/stylesheets directory can be referenced here using a relative path.
+ *
+ * You're free to add application-wide styles to this file and they'll appear at the bottom of the
+ * compiled file so the styles you add here take precedence over styles defined in any other CSS
+ * files in this directory. Styles in this file should be added after the last require_* statement.
+ * It is generally better to create a new file per style scope.
+ *
+ *= require_tree .
+ *= require_self
+ */
+
+ /* リンク下線消し */
+ a {
+    text-decoration: none;
+ }
+
+ /* ヘッダー */
+ .header {
+    width: 100%;
+    height: 50px;
+    line-height: 50px;
+    background: #ffc06e;
+ }
+
+ /* 横幅 */
+ .width-120 {
+    width: 120px;
+ }
+
+ .width-200 {
+    width: 200px;
+ }
+
+ .width-600 {
+    width: 600px;
+ }
+
+ /* 間隔 */
+ .padding-5 {
+    padding: 5px;
+ }
+
+ .padding-l-15p {
+    padding-left: 15%;
+ }
+
+ /* display */
+ .display-f {
+    display: flex;
+ }
+
+ /* 文字位置　横 */
+ .text-align-c {
+    text-align: center;
+ }
+
+ /* 文字色 */
+ .color-white {
+    color: #ffffff;
+ }
+
+ /* 背景色 */
+ .background-color-green {
+    background-color: #01bf33;
+ }
+
+ /* 線 */
+ .border {
+    border: 1px solid #000000;
+ }
+
+ .border-green {
+    border: 1px solid #01bf33;
+ }
+
+ /* 線の丸み */
+ .border-radius-3 {
+    border-radius: 3px;
+ }
+
+ /* 文字位置　高さ */
+ .vertical-align-t {
+    vertical-align: top;
+ }
+```
 
 </details>
