@@ -1865,7 +1865,8 @@ rails g controller Mypages show edit update
 rails g devise:views
 
 # 不必要なビューの削除
-rm app/views/mypages/update.html.erb
+rm app/views/mypages/update.html.erb # マイページ更新画面
+rm app/views/posts/edit.html.erb     # 投稿編集画面
 ```
 
 ---
@@ -2074,9 +2075,11 @@ class PostsController < ApplicationController
     @post = Post.new
   end
 
+　# 削除　ここから
   # GET /posts/1/edit
   def edit
   end
+  # 削除　ここまで
 
   # POST /posts or /posts.json
   def create
@@ -2094,11 +2097,12 @@ class PostsController < ApplicationController
     end
   end
 
+  # 削除　ここから
   # PATCH/PUT /posts/1 or /posts/1.json
   def update
     respond_to do |format|
       if @post.update(post_params)
-        format.html { redirect_to @post, notice: "投稿を更新しました" } # 編集
+        format.html { redirect_to @post, notice: "" }
         format.json { render :show, status: :ok, location: @post }
       else
         format.html { render :edit, status: :unprocessable_entity }
@@ -2106,6 +2110,7 @@ class PostsController < ApplicationController
       end
     end
   end
+  # 削除　ここまで
 
   # DELETE /posts/1 or /posts/1.json
   def destroy
@@ -2163,10 +2168,50 @@ class MypagesController < ApplicationController
   private
 
   def user_params
-    params.require(:user).permit(:name, :email, :content)
+    params.require(:user).permit(:name, :email, :avatar)
   end
   # 追加　ここまで
 end
+```
+
+---
+
+`/app/views/layouts/application.html.erb`
+```html
+<!DOCTYPE html>
+<html>
+  <!-- 省略 -->
+
+  <body>
+    <!-- 追加　ここから -->
+    <header class="header display-f">
+      <% if user_signed_in? %>
+        <div class="width-200 text-align-c padding-l-15p">
+          <%= link_to "新規投稿", new_post_path, class: "color-white" %>
+        </div>
+        <div class="width-200 text-align-c">
+          <%= link_to "投稿一覧", posts_path, class: "color-white" %>
+        </div>
+        <div class="width-200 text-align-c">
+          <%= link_to "マイページ", mypage_path(current_user.id), class: "color-white" %>
+        </div>
+        <div class="width-200 text-align-c">
+          <%= link_to 'ログアウト', destroy_user_session_path, data: { turbo_method: :delete }, class: "color-white" %>
+        </div>
+      <% else %>
+        <div class="width-200 text-align-c padding-l-15p">
+          <%= link_to "サインアップ", new_user_registration_path, class: "color-white" %>
+        </div>
+        <div class="width-200 text-align-c">
+          <%= link_to "ログイン", new_user_session_path, class: "color-white" %>
+        </div>
+      <% end %>
+    </header>
+    <!-- 追加　ここまで -->
+
+    <%= yield %>
+  </body>
+</html>
 ```
 
 ---
@@ -2391,6 +2436,46 @@ end
 
 ---
 
+`/app/views/posts/_form.html.erb`
+```html
+<%= form_with(model: post) do |form| %>
+  <% if post.errors.any? %>
+    <div style="color: red">
+      <h2><%= pluralize(post.errors.count, "error") %> prohibited this post from being saved:</h2>
+
+      <ul>
+        <% post.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.label :タイトル, style: "display: block" %> <!-- 編集 -->
+    <%= form.text_field :tilte %>
+  </div>
+
+  <div>
+    <%= form.label :投稿内容, style: "display: block" %> <!-- 編集 -->
+    <%= form.text_area :content %>
+  </div>
+
+  <div>
+    <%= form.label :画像, style: "display: block" %> <!-- 編集 -->
+    <%= form.file_field :image %> <!-- 編集 -->
+  </div>
+
+  <br /> <!-- 追加 -->
+
+  <div>
+    <%= form.submit '投稿' %> <!-- 編集 -->
+  </div>
+<% end %>
+```
+
+---
+
 `/app/views/posts/index.html.erb`
 ```html
 <div class="padding-l-15p"> <!-- 追加 -->
@@ -2482,7 +2567,7 @@ end
     <% if post.image.attached? %>
       <%= image_tag post.image, size: "600x600" %>
     <% else %>
-      <%= image_tag 'NoImage.png', size: "200x200" %>
+      <%= image_tag 'NoImage.png', size: "600x600" %>
     <% end %>
     <!-- 追加　ここまで -->
   </p>
@@ -2524,10 +2609,6 @@ end
  }
 
  /* 横幅 */
- .width-120 {
-    width: 120px;
- }
-
  .width-200 {
     width: 200px;
  }
@@ -2537,17 +2618,8 @@ end
  }
 
  /* 間隔 */
- .padding-5 {
-    padding: 5px;
- }
-
  .padding-l-15p {
     padding-left: 15%;
- }
-
- /* display */
- .display-f {
-    display: flex;
  }
 
  /* 文字位置　横 */
@@ -2560,23 +2632,9 @@ end
     color: #ffffff;
  }
 
- /* 背景色 */
- .background-color-green {
-    background-color: #01bf33;
- }
-
  /* 線 */
  .border {
     border: 1px solid #000000;
- }
-
- .border-green {
-    border: 1px solid #01bf33;
- }
-
- /* 線の丸み */
- .border-radius-3 {
-    border-radius: 3px;
  }
 
  /* 文字位置　高さ */
