@@ -1837,6 +1837,9 @@ end
 
 <details>
 
+<br>
+
+ターミナル
 ```bash
 rails new photo_post
 cd photo_post
@@ -2012,11 +2015,11 @@ class ApplicationController < ActionController::Base
   before_action :configure_permitted_parameters, if: :devise_controller?
 
   def after_sign_in_path_for(resource)
-      mypage_path(resource)
+    posts_path
   end
 
   def after_sign_out_path_for(resource)
-      root_path
+    user_session_path
   end
 
   protected
@@ -2042,7 +2045,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
   # The path used after sign up.
   # #を外す　ここから
   def after_sign_up_path_for(resource)
-    mypage_path(resource) # 編集
+    posts_path # 編集
   end
   # #を外す　ここまで
 
@@ -2167,9 +2170,9 @@ class MypagesController < ApplicationController
   # 追加　ここから
   private
 
-  def user_params
-    params.require(:user).permit(:name, :email, :avatar)
-  end
+    def user_params
+      params.require(:user).permit(:name, :email, :avatar)
+    end
   # 追加　ここまで
 end
 ```
@@ -2275,7 +2278,7 @@ end
   <%= form_with model: @user, url: session_path(resource_name) do |f| %>  <!-- 編集 -->
     <div class="field">
       <%= f.label :名前 %><br /> <!-- 編集 -->
-      <%= f.email_field :name, autofocus: true, autocomplete: "name" %> <!-- 編集 -->
+      <%= f.text_field :name, autofocus: true, autocomplete: "name" %> <!-- 編集 -->
     </div>
 
     <div class="field">
@@ -2580,19 +2583,7 @@ end
 ``
 ```css
 /*
- * This is a manifest file that'll be compiled into application.css, which will include all the files
- * listed below.
- *
- * Any CSS (and SCSS, if configured) file within this directory, lib/assets/stylesheets, or any plugin's
- * vendor/assets/stylesheets directory can be referenced here using a relative path.
- *
- * You're free to add application-wide styles to this file and they'll appear at the bottom of the
- * compiled file so the styles you add here take precedence over styles defined in any other CSS
- * files in this directory. Styles in this file should be added after the last require_* statement.
- * It is generally better to create a new file per style scope.
- *
- *= require_tree .
- *= require_self
+ 省略
  */
 
  /* リンク下線消し */
@@ -2622,6 +2613,11 @@ end
     padding-left: 15%;
  }
 
+ /* display */
+ .display-f {
+    display: flex;
+ }
+
  /* 文字位置　横 */
  .text-align-c {
     text-align: center;
@@ -2641,6 +2637,669 @@ end
  .vertical-align-t {
     vertical-align: top;
  }
+```
+
+</details>
+
+<br>
+
+### (7)
+<details>
+
+<br>
+
+ターミナル
+```sh
+rails new search_practice
+
+# gemfileを編集後
+rails g devise:install
+
+# Deviseでモデルの作成
+rails g devise User
+rails g scaffold Post title:string comment:text 
+
+# マイグレーションファイルを編集してから
+rails db:migrate
+
+# コントローラーの作成
+rails g devise:controllers Users
+rails g controller Mypages index show
+
+# ビューの作成
+rails g devise:views
+
+```
+
+---
+
+`/Gemfile`
+```gemfile
+# 省略
+
+gem 'devise'    # 追加
+gem 'ransack'   # 追加
+```
+
+---
+
+`/db/migrate/xxxxxxxxxxxxxx_devise_create_users.rb`
+```rb
+ frozen_string_literal: true
+
+class DeviseCreateUsers < ActiveRecord::Migration[7.1]
+  def change
+    create_table :users do |t|
+      ## Database authenticatable
+      t.string :email,              null: false, default: ""
+      t.string :encrypted_password, null: false, default: ""
+
+      t.string :name # 追加
+
+      # 省略
+
+      ## Trackable
+      # #を外す　ここから
+      t.integer  :sign_in_count, default: 0, null: false
+      t.datetime :current_sign_in_at
+      t.datetime :last_sign_in_at
+      t.string   :current_sign_in_ip
+      t.string   :last_sign_in_ip
+      # #を外す　ここまで
+
+      # 省略
+  end
+end
+```
+
+---
+
+`/config/routes.rb`
+```rb
+Rails.application.routes.draw do
+  get 'mypages/index' # 削除
+  get 'mypages/show'  # 削除
+  resources :posts, only: [:index, :new, :create, :show]   # 追加
+  devise_for :users
+
+  resources :mypages, only: [:index, show] # 追加
+
+  root to: "posts#index" # 追加
+
+  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
+
+  # 省略
+end
+```
+
+---
+
+`/config/initializers/devise.rb`
+```rb
+  # 省略
+
+  # ==> Configuration for any authentication mechanism
+  # Configure which keys are used when authenticating a user. The default is
+  # just :email. You can configure it to use [:username, :subdomain], so for
+  # authenticating a user, both parameters are required. Remember that those
+  # parameters are used only when authenticating and not when retrieving from
+  # session. If you need permissions, you should implement that in a before filter.
+  # You can also supply a hash where the value is a boolean determining whether
+  # or not authentication should be aborted when the value is not present.
+  config.authentication_keys = [:name] # emailから変更
+
+  # 省略
+
+```
+
+---
+
+`/app/models/user.rb`
+```rb
+class User < ApplicationRecord
+  # Include default devise modules. Others available are:
+  # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
+  devise :database_authenticatable, :registerable,
+         :recoverable, :rememberable, :validatable
+
+  # 追加　ここから
+  has_many :posts, dependent: :destroy
+
+  def self.ransackable_attributes(auth_object = nil)
+    %w[name email]
+  end
+  # 追加　ここまで
+end
+```
+
+---
+
+`/app/models/post.rb`
+```rb
+class Post < ApplicationRecord
+    # 追加　ここから
+    belongs_to :user 
+
+    def self.ransackable_attributes(auth_object = nil)
+        %w[title content]
+    end
+    # 追加　ここまで
+end
+```
+
+---
+
+`/app/controllers/application_controller.rb`
+```rb
+class ApplicationController < ActionController::Base
+  # 追加　ここから
+  before_action :configure_permitted_parameters, if: :devise_controller?
+
+  def after_sign_in_path_for(resource)
+      mypage_path(resource)
+  end
+
+  def after_sign_out_path_for(resource)
+      root_path
+  end
+
+  protected
+
+  def configure_permitted_parameters
+    devise_parameter_sanitizer.permit(:sign_up, keys: [:name, :email])
+  end
+  # 追加　ここまで
+end
+```
+
+---
+
+`/app/controllers/Users/registrations_controllers`
+```rb
+class Users::RegistrationsController < Devise::RegistrationsController
+  # 省略
+
+  # The path used after sign up.
+  # #を外す　ここから
+  def after_sign_up_path_for(resource)
+    super(resource)
+  end
+  # #を外す　ここから
+
+  # The path used after sign up for inactive accounts.
+  # def after_inactive_sign_up_path_for(resource)
+  #   super(resource)
+  # end
+end
+```
+
+---
+
+`/app/controllers/posts_controller.rb`
+```rb
+class PostsController < ApplicationController
+　before_action :authenticate_user! # 追加
+  before_action :set_post, only: %i[ show destroy ] # 編集
+
+  # GET /posts or /posts.json
+  def index
+    @q = Post.ransack(q_params) # 追加
+    @posts = @q.result          # 編集
+  end
+
+  # GET /posts/1 or /posts/1.json
+  def show
+  end
+
+  # GET /posts/new
+  def new
+    @post = Post.new
+  end
+
+　# 削除　ここから
+  # GET /posts/1/edit
+  def edit
+  end
+  # 削除　ここまで
+
+  # POST /posts or /posts.json
+  def create
+    @post = Post.new(post_params)
+    @post.user_id = current_user.id  # 追加
+
+    respond_to do |format|
+      if @post.save
+        format.html { redirect_to @post, notice: notice: "投稿しました" } # 編集
+        format.json { render :show, status: :created, location: @post }
+      else
+        format.html { render :new, status: :unprocessable_entity }
+        format.json { render json: @post.errors, status: :unprocessable_entity }
+      end
+    end
+  end
+
+　# 削除　ここから
+  # PATCH/PUT /posts/1 or /posts/1.json
+  def update
+    respond_to do |format|
+      if @post.update(post_params)
+        format.html { redirect_to @post, notice: "Post was successfully updated." }
+        format.json { render :show, status: :ok, location: @post }
+      else
+        format.html { render :edit, status: :unprocessable_entity }
+        format.json { render json: @post.errors, status: :unprocessable_entity }
+      end
+    end
+  end
+  # 削除　ここまで
+
+  # DELETE /posts/1 or /posts/1.json
+  def destroy
+    @post.destroy!
+
+    respond_to do |format|
+      format.html { redirect_to posts_path, status: :see_other, notice: "投稿を削除しました" } # 編集
+      format.json { head :no_content }
+    end
+  end
+
+  private
+    # Use callbacks to share common setup or constraints between actions.
+    def set_post
+      @post = Post.find(params[:id])
+    end
+
+    # Only allow a list of trusted parameters through.
+    def post_params
+      params.require(:post).permit(:title, :content, :user_id)
+    end
+
+    # 追加　ここから
+    def q_params
+      params.require(:q).permit(:title, :content, :user_id)
+    end
+    # 追加　ここまで
+end
+```
+
+---
+
+`/app/controllers/mypages_controller.rb`
+```rb
+class MypagesController < ApplicationController
+  before_action :authenticate_user! # 追加
+
+  def index
+    @q = User.ransack params[:q]    # 追加
+    @users = @q.result              # 追加
+  end
+
+  def show
+    @user = User.find(params[:id])  # 追加
+  end
+
+  # 追加　ここから
+  private
+
+    def user_params
+      params.require(:user).permit(:name, :email)
+    end
+
+    def q_params
+      params.require(:q).permit(:name, :email)
+    end
+  # 追加　ここまで
+end
+```
+
+---
+
+`/app/views/layouts/application.html.erb`
+```html
+<!DOCTYPE html>
+<html>
+  <!-- 省略 -->
+
+  <body>
+    <!-- 追加　ここから -->
+    <header class="header display-f">
+      <% if user_signed_in? %>
+        <div class="width-200 text-align-c padding-l-15p">
+          <%= link_to "新規投稿", new_post_path, class: "color-white" %>
+        </div>
+        <div class="width-200 text-align-c">
+          <%= link_to "ユーザー一覧", mypages_path, class: "color-white" %>
+        </div>
+        <div class="width-200 text-align-c">
+          <%= link_to "投稿一覧", posts_path, class: "color-white" %>
+        </div>
+        <div class="width-200 text-align-c">
+          <%= link_to "マイページ", mypage_path(current_user.id), class: "color-white" %>
+        </div>
+        <div class="width-200 text-align-c">
+          <%= link_to 'ログアウト', destroy_user_session_path, data: { turbo_method: :delete }, class: "color-white" %>
+        </div>
+      <% else %>
+        <div class="width-200 text-align-c padding-l-15p">
+          <%= link_to "サインアップ", new_user_registration_path, class: "color-white" %>
+        </div>
+        <div class="width-200 text-align-c">
+          <%= link_to "ログイン", new_user_session_path, class: "color-white" %>
+        </div>
+      <% end %>
+    </header>
+    <!-- 追加　ここまで -->
+
+    <%= yield %>
+  </body>
+</html>
+```
+
+---
+
+`/app/views/devise/registrations/new.html.erb`
+
+```html
+<div class="padding-l-15p"> <!-- 追加 -->
+  <h2>サインアップ</h2> <!-- 編集 -->
+
+  <%= form_with model: @user, url: registration_path(resource_name) do |f| %> <!-- 編集 -->
+    <%= render "devise/shared/error_messages", resource: resource %>
+    
+    <!-- 追加　ここから -->
+    <div class="field">
+      <%= f.label :名前 %><br />
+      <%= f.text_field :name, autofocus: true, autocomplete: "name" %>
+    </div>
+    <!-- 追加　ここまで -->
+
+    <div class="field">
+      <%= f.label :メールアドレス %><br /> <!-- 編集 -->
+      <%= f.email_field :email, autocomplete: "email" %> <!-- 編集 -->
+    </div>
+
+    <div class="field">
+      <%= f.label :パスワード %> <!-- 編集 -->
+      <% if @minimum_password_length %>
+        <em>(<%= @minimum_password_length %> characters minimum)</em>
+      <% end %><br />
+      <%= f.password_field :password, autocomplete: "new-password" %>
+    </div>
+
+    <div class="field">
+      <%= f.label :パスワードの確認 %><br /> <!-- 編集 -->
+      <%= f.password_field :password_confirmation, autocomplete: "new-password" %>
+    </div>
+
+    <div class="actions">
+      <%= f.submit "サインアップ" %> <!-- 編集 -->
+    </div>
+  <% end %>
+
+  <%= render "devise/shared/links" %>
+</div> <!-- 追加 -->
+```
+
+---
+
+`/app/views/devise/sessions/new.html.erb`
+```html
+<div class="padding-l-15p"> <!-- 追加 -->
+
+  <h2>ログイン</h2> <!-- 編集 -->
+
+  <%= form_with model: @user, url: session_path(resource_name) do |f| %>  <!-- 編集 -->
+    <div class="field">
+      <%= f.label :名前 %><br /> <!-- 編集 -->
+      <%= f.text_field :name, autofocus: true, autocomplete: "name" %> <!-- 編集 -->
+    </div>
+
+    <div class="field">
+      <%= f.label :パスワード %><br /> <!-- 編集 -->
+      <%= f.password_field :password, autocomplete: "current-password" %>
+    </div>
+
+    <% if devise_mapping.rememberable? %>
+      <div class="field">
+        <%= f.check_box :remember_me %>
+        <%= f.label :ログイン状態を保持 %> <!-- 編集 -->
+      </div>
+    <% end %>
+
+    <div class="actions">
+      <%= f.submit "ログイン" %> <!-- 編集 -->
+    </div>
+  <% end %>
+
+  <%= render "devise/shared/links" %>
+
+</div> <!-- 追加 -->
+```
+
+
+---
+
+`/app/views/devise/shared/_links.html.erb`
+```html
+<%- if controller_name != 'sessions' %>
+  <%= link_to "ログイン", new_session_path(resource_name) %><br /> <!-- 編集 --> 
+<% end %>
+
+<%- if devise_mapping.registerable? && controller_name != 'registrations' %>
+  <%= link_to "サインアップ", new_registration_path(resource_name) %><br /> <!-- 編集 -->
+<% end %>
+
+<%- if devise_mapping.recoverable? && controller_name != 'passwords' && controller_name != 'registrations' %>
+  <%= link_to "パスワードをお忘れですか?", new_password_path(resource_name) %><br /> <!-- 編集 -->
+<% end %>
+
+<!-- 省略 --> 
+```
+
+---
+
+`/app/views/mypages/index.html.erb`
+```html
+<h1>Mypages#index</h1> <!-- 削除 -->
+<p>Find me in app/views/mypages/index.html.erb</p> <!-- 削除 -->
+
+<!-- 追加　ここから -->
+<div class="padding-l-15p">
+  <p style="color: green"><%= notice %></p>
+
+  <h1>ユーザー一覧</h1>
+
+  <h2>ユーザー検索</h2>
+  <%= search_form_for @q, url: mypages_path do |f| %>
+    <table>
+      <tr>
+        <th>名前</th>
+        <td><%= f.text_field :name_cont %></td>
+      </tr>
+    </table>
+    <%= f.submit '検索' %>
+  <% end %>
+
+  <br>
+
+  <h2>一覧</h2>
+  <div id="posts">
+    <table class="table">
+      <thead>
+        <tr>
+          <th class="border width-200">名前</th>
+          <th class="width-200"></th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <% @users.each do |user| %>         
+          <tr>
+            <td class="border">
+              <%= user.name %>
+            </td>
+            <td>
+              <%= link_to "投稿詳細", mypage_path(user.id) %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+
+    </table>
+  </div>
+
+</div>
+<!-- 追加　ここまで -->
+```
+
+
+`/app/views/mypages/show.html.erb`
+```html
+<h1>Mypages#show</h1> <!-- 削除 -->
+<p>Find me in app/views/mypages/show.html.erb</p> <!-- 削除 -->
+
+<!-- 追加　ここから -->
+<div class="padding-l-15p"> 
+  <p style="color: green"><%= notice %></p>
+
+  <h2>
+    <%= @user.name %>
+  </h2>
+
+</div>
+<!-- 追加　ここまで -->
+```
+
+---
+
+`/app/views/posts/index.html.erb`
+```html
+<div class="padding-l-15p"> <!-- 追加 -->
+  <p style="color: green"><%= notice %></p>
+
+  <h1>投稿一覧</h1> <!-- 編集 -->
+
+　<!-- 追加　ここから -->
+  <h2>投稿検索</h2>
+  <%= search_form_for @q do |f| %>
+    <table>
+      <tr>
+        <th>タイトル</th>
+        <td><%= f.text_field :title_cont %></td>
+      </tr>
+      <tr>
+        <th>投稿内容</th>
+        <td><%= f.text_field :content_cont %></td>
+      </tr>
+    </table>
+    <%= f.submit '検索' %>
+  <% end %>
+
+  <h2>一覧</h2>
+  <!-- 追加　ここまで -->
+
+  <div id="posts">
+    <% @posts.each do |post| %>
+      <%= render post %>
+      <p>
+        <%= link_to "投稿詳細", post %> <!-- 編集 -->
+      </p>
+    <% end %>
+  </div>
+
+  <%= link_to "New post", new_post_path %> <!-- 削除 -->
+</div>
+```
+
+---
+
+`/app/views/posts/show.html.erb`
+```html
+<div class="padding-l-15p"> <!-- 追加 -->
+
+  <p style="color: green"><%= notice %></p>
+
+  <%= render @post %>
+
+  <div>
+    <!-- 追加　ここから -->
+    <% if @post.user == current_user %>
+      <%= button_to "投稿を削除", @post, method: :delete %>
+    <% end %>
+    <!-- 追加　ここまで -->
+
+    <!-- 削除　ここから -->
+    <%= link_to "Edit this favorite", edit_favorite_path(@favorite) %> |
+    <%= link_to "Back to favorites", favorites_path %>
+
+    <%= button_to "Destroy this favorite", @favorite, method: :delete %>
+    <!-- 削除　ここまで -->
+
+  </div>
+
+</div>
+```
+
+---
+
+`/app/assets/stylesheets/application.css`
+```css
+/*
+ 省略
+*/
+
+ /* リンク下線消し */
+ a {
+    text-decoration: none;
+ }
+
+ /* ヘッダー */
+ .header {
+    width: 100%;
+    height: 50px;
+    line-height: 50px;
+    background: #ff9915;
+ }
+
+ /* 横幅 */
+ .width-200 {
+    width: 200px;
+ }
+
+ .width-600 {
+    width: 600px;
+ }
+
+ /* 間隔 */
+ .padding-l-15p {
+    padding-left: 15%;
+ }
+
+  /* display */
+ .display-f {
+    display: flex;
+ }
+
+ /* 文字位置　横 */
+ .text-align-c {
+    text-align: center;
+ }
+
+ /* 文字色 */
+ .color-white {
+    color: #ffffff;
+ }
+
+ /* 線 */
+ .border {
+    border: 1px solid #000000;
+ }
+
+ /* テーブル */
+ .table {
+    border-collapse: collapse;
+ }
+
 ```
 
 </details>

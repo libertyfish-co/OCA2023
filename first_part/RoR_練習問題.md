@@ -391,3 +391,61 @@ __【画面イメージ】__
 <br >
 
 ---
+
+### 問題7 
+### 投稿アプリを作成しましょう。以下の条件で作成してください。
+__【アプリ作成の条件は以下の通り】__
+- アプリ名は`search_practice`で作成してください。
+
+- `User`モデルと`Post`モデルを作成してください。
+
+- `User`モデルにはユーザー名とメールアドレス、パスワードを設定しログインできるようにしてください。
+
+- `Post`モデルではタイトル、投稿内容を登録できるようにしてください。
+
+- ユーザー検索のために`mypages_controller.rb`を作成しましょう。
+
+- 画面はユーザー一覧画面、マイページ画面、投稿一覧画面、投稿詳細画面を実装してください。
+
+- `User`モデルはユーザー一覧画面で、`Post`モデルは投稿一覧画面で検索できるようにしてください。
+
+- `seed`内に下記の添付のデータを貼り付けておいてください。
+
+```rb
+user1 = User.create(name: '大阪 大', email: 'oosaka@email.com', password: 'password')
+user2 = User.create(name: '東京 都', email: 'tokyo@email.com', password: 'password')
+user2 = User.create(name: '北海 道', email: 'hokkaido@email.com', password: 'password')
+
+post1 = Post.create(title: '投稿1', content: '最初の投稿', user_id: 1)
+post2 = Post.create(title: '投稿2', content: '2つ目の投稿', user_id: 2)
+post3 = Post.create(title: '投稿3', content: '3つ目の投稿', user_id: 1)
+```
+
+`User : ユーザーテーブル`
+| field名 | 名 称 | 型 | バリデーション |
+|---|---|---|---|
+| id | ID | integer | 無し |
+| name | 名前 | string | is not null、20文字以内 |
+
+
+`Post : 投稿テーブル`
+| field名 | 名 称 | 型 | バリデーション |
+|---|---|---|---|
+| id | ID | integer | 無し |
+| title | タイトル | string | is not null、20文字以内 |
+| content | 投稿内容 | text | 200文字以内 |
+
+__【画面イメージ】__
+
+#### 投稿一覧画面　検索無し
+<img src="images/RoR_練習問題/練習問題-7/練習問題-7_投稿一覧画面_検索無し.png" width= "600px" height="300px" >
+
+#### 投稿一覧画面　検索有り
+<img src="images/RoR_練習問題/練習問題-7/練習問題-7_投稿一覧画面_検索有り.png" width= "600px" height="300px" >
+
+#### ユーザー一覧画面　検索無し
+<img src="images/RoR_練習問題/練習問題-7/練習問題-7_ユーザー一覧画面_検索無し.png" width= "600px" height="300px" >
+
+#### ユーザー一覧画面　検索有り
+<img src="images/RoR_練習問題/練習問題-7/練習問題-7_ユーザー一覧画面_検索有り.png" width= "600px" height="300px" >
+<br>
