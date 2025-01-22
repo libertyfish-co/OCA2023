@@ -3202,12 +3202,39 @@ end
   <!-- 追加　ここまで -->
 
   <div id="posts">
-    <% @posts.each do |post| %>
-      <%= render post %>
-      <p>
-        <%= link_to "投稿詳細", post %> <!-- 編集 -->
-      </p>
-    <% end %>
+    <!-- 追加　ここから -->
+    <table class="table">
+      <thead>
+        <tr>
+          <th class="border width-200">タイトル</th>
+          <th class="border width-600">投稿内容</th>
+          <th class="width-200"></th>
+        </tr>
+      </thead>
+
+      <tbody>
+    <!-- 追加　ここまで -->
+
+      <% @posts.each do |post| %>
+        <%= render post %> <!-- 削除 -->
+        
+        <!-- 追加　ここから -->
+        <tr>
+          <td class="border">
+            <%= post.title %>
+          </td>
+        
+          <td class="border">
+            <%= post.content %>
+          </td>
+        <!-- 追加　ここまで -->
+          
+          <td> <!-- 編集 -->
+            <%= link_to "投稿詳細", post %> <!-- 編集 -->
+          </td> <!-- 編集 -->
+        
+        </tr> <!--追加 -->
+      <% end %>
   </div>
 
   <%= link_to "New post", new_post_path %> <!-- 削除 -->
