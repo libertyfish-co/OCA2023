@@ -3,15 +3,17 @@
 ### 目次
 <details>
 
- - [(1)](#1)
- - [(2)](#2)
- - [(3)](#3)
- - [(4)](#4)
- - [(5)](#5)
+ - [問題1](#問題1)
+ - [問題2](#問題2)
+ - [問題3](#問題3)
+ - [問題4](#問題4)
+ - [問題5](#問題5)
+ - [問題6](#問題6)
+ - [問題7](#問題7)
 
 </details>
 
-### (1)
+### 問題1
 <details>
 
 <br>
@@ -280,7 +282,7 @@ end
 
 <br>
 
-### (2)
+### 問題2
 <details>
 
 <br>
@@ -320,7 +322,7 @@ end
 
 <br>
 
-### (3)
+### 問題3
 <details>
 
 <br>
@@ -583,7 +585,7 @@ end
 
 <br>
 
-### (4)
+### 問題4
 <details>
 
 <br>
@@ -913,7 +915,7 @@ end
 
 <br>
 
-### (5)
+### 問題5
 <details>
 
 <br>
@@ -1833,7 +1835,7 @@ end
 
 <br>
 
-### (6)
+### 問題6
 
 <details>
 
@@ -2643,7 +2645,7 @@ end
 
 <br>
 
-### (7)
+### 問題7
 <details>
 
 <br>
@@ -2657,7 +2659,9 @@ rails g devise:install
 
 # Deviseでモデルの作成
 rails g devise User
-rails g scaffold Post title:string comment:text 
+
+# Postモデルの作成
+rails g scaffold Post title:string content:text 
 
 # マイグレーションファイルを編集してから
 rails db:migrate
@@ -2685,7 +2689,7 @@ gem 'ransack'   # 追加
 
 `/db/migrate/xxxxxxxxxxxxxx_devise_create_users.rb`
 ```rb
- frozen_string_literal: true
+# frozen_string_literal: true
 
 class DeviseCreateUsers < ActiveRecord::Migration[7.1]
   def change
@@ -3076,7 +3080,6 @@ end
 </div> <!-- 追加 -->
 ```
 
-
 ---
 
 `/app/views/devise/shared/_links.html.erb`
@@ -3247,6 +3250,683 @@ end
 /*
  省略
 */
+
+ /* リンク下線消し */
+ a {
+    text-decoration: none;
+ }
+
+ /* ヘッダー */
+ .header {
+    width: 100%;
+    height: 50px;
+    line-height: 50px;
+    background: #ff9915;
+ }
+
+ /* 横幅 */
+ .width-200 {
+    width: 200px;
+ }
+
+ .width-600 {
+    width: 600px;
+ }
+
+ /* 間隔 */
+ .padding-l-15p {
+    padding-left: 15%;
+ }
+
+  /* display */
+ .display-f {
+    display: flex;
+ }
+
+ /* 文字位置　横 */
+ .text-align-c {
+    text-align: center;
+ }
+
+ /* 文字色 */
+ .color-white {
+    color: #ffffff;
+ }
+
+ /* 線 */
+ .border {
+    border: 1px solid #000000;
+ }
+
+ /* テーブル */
+ .table {
+    border-collapse: collapse;
+ }
+
+```
+
+</details>
+
+<br>
+
+---
+
+### 問題8
+<details>
+
+ターミナル
+```sh
+rails new no_gem_search_practice
+
+# Gemfileを編集後
+rails g devise:install
+
+# Deviseでモデルの作成
+rails g devise User
+
+# Cookingモデル、Gereモデル、Relationモデルの作成
+rails g scaffold Cooking dish_name:string content:text user:references genre_id:integer
+rails g scaffold Genre genre_name:string
+
+# マイグレーションファイルを編集してから
+rails db:migrate
+
+# コントローラーの作成
+rails g devise:controllers Users
+
+# ビューの作成
+rails g devise:views
+```
+
+---
+
+`/Gemfile`
+```gemfile
+# 省略
+
+gem 'devise'    # 追加
+```
+
+---
+
+`/db/migrate/xxxxxxxxxxxxxx_devise_create_users.rb`
+```rb
+# frozen_string_literal: true
+
+class DeviseCreateUsers < ActiveRecord::Migration[7.1]
+  def change
+    create_table :users do |t|
+      ## Database authenticatable
+      t.string :email,              null: false, default: ""
+      t.string :encrypted_password, null: false, default: ""
+
+      t.string :name # 追加
+
+      # 省略
+
+      ## Trackable
+      # #を外す　ここから
+      t.integer  :sign_in_count, default: 0, null: false
+      t.datetime :current_sign_in_at
+      t.datetime :last_sign_in_at
+      t.string   :current_sign_in_ip
+      t.string   :last_sign_in_ip
+      # #を外す　ここまで
+
+      # 省略
+  end
+end
+```
+
+---
+
+`/app/models/user.rb`
+```rb
+class User < ApplicationRecord
+  # Include default devise modules. Others available are:
+  # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
+  devise :database_authenticatable, :registerable,
+         :recoverable, :rememberable, :validatable
+
+  has_many :cookings, dependent: :destroy # 追加
+  has_many :genres                        # 追加
+
+end
+```
+
+---
+
+`/app/models/cooking.rb`
+```rb
+class Cooking < ApplicationRecord
+    # 追加　ここから
+    belongs_to :user
+    belongs_to :genre
+    # 追加　ここまで
+end
+```
+
+---
+
+`/app/models/genre.rb`
+```rb
+class Genre < ApplicationRecord
+    has_many :cookings # 追加
+end
+```
+
+---
+
+`/config/routes.rb`
+```rb
+Rails.application.routes.draw do
+  resources :genres
+  resources :cookings
+  devise_for :users
+
+  root to: "cookings#index" # 追加
+  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
+
+  # 省略
+end
+
+```
+
+`/app/controllers/application_controller.rb`
+```rb
+class ApplicationController < ActionController::Base
+  # 追加　ここから
+  before_action :configure_permitted_parameters, if: :devise_controller?
+
+  def after_sign_in_path_for(resource)
+      cookings_path
+  end
+
+  def after_sign_out_path_for(resource)
+      root_path
+  end
+
+  protected
+
+  def configure_permitted_parameters
+    devise_parameter_sanitizer.permit(:sign_up, keys: [:email])
+  end
+  # 追加　ここまで
+end
+```
+
+---
+
+`/app/controllers/Users/registrations_controllers`
+```rb
+class Users::RegistrationsController < Devise::RegistrationsController
+  # 省略
+
+  # The path used after sign up.
+  # #を外す　ここから
+  def after_sign_up_path_for(resource)
+    cookings_path # 編集
+  end
+  # #を外す　ここから
+
+  # The path used after sign up for inactive accounts.
+  # def after_inactive_sign_up_path_for(resource)
+  #   super(resource)
+  # end
+end
+```
+
+---
+
+`/app/controllers/cookings_controller.rb`
+```rb
+class CookingsController < ApplicationController
+  before_action :authenticate_user! # 追加
+  before_action :set_cooking, only: %i[ show edit update destroy ]
+
+  # GET /cookings or /cookings.json
+  def index
+    # @cookings = Cooking.all # 削除
+
+    # 追加　ここから
+    return @cookings = Cooking.all if params[:dish_name].blank? && params[:genre].blank?
+
+    if params[:dish_name].present?
+      @cookings = Cooking.where(["dish_name like ?", "%#{params[:name]}%"])
+    else
+      @cookings = @cookings.joins(:genres).where("genres.genre_name = ?", params[:genre]) if params[:genre].present?
+    end
+    # 追加　ここまで
+  end
+
+  # GET /cookings/1 or /cookings/1.json
+  def show
+  end
+
+  # GET /cookings/new
+  def new
+    @cooking = Cooking.new
+  end
+
+  # GET /cookings/1/edit
+  def edit
+  end
+
+  # POST /cookings or /cookings.json
+  def create
+    @cooking = Cooking.new(cooking_params)
+    @cooking.user_id = current_user.id # 追加
+
+    respond_to do |format|
+      if @cooking.save
+        format.html { redirect_to @cooking, notice: "料理を新たに登録しました" } # 編集
+        format.json { render :show, status: :created, location: @cooking }
+      else
+        format.html { render :new, status: :unprocessable_entity }
+        format.json { render json: @cooking.errors, status: :unprocessable_entity }
+      end
+    end
+  end
+
+  # PATCH/PUT /cookings/1 or /cookings/1.json
+  def update
+    respond_to do |format|
+      if @cooking.update(cooking_params)
+        format.html { redirect_to @cooking, notice: "Cooking was successfully updated." }
+        format.json { render :show, status: :ok, location: @cooking }
+      else
+        format.html { render :edit, status: :unprocessable_entity }
+        format.json { render json: @cooking.errors, status: :unprocessable_entity }
+      end
+    end
+  end
+
+  # DELETE /cookings/1 or /cookings/1.json
+  def destroy
+    @cooking.destroy!
+
+    respond_to do |format|
+      format.html { redirect_to cookings_path, status: :see_other, notice: "Cooking was successfully destroyed." }
+      format.json { head :no_content }
+    end
+  end
+
+  private
+    # Use callbacks to share common setup or constraints between actions.
+    def set_cooking
+      @cooking = Cooking.find(params[:id])
+    end
+
+    # Only allow a list of trusted parameters through.
+    def cooking_params
+      params.require(:cooking).permit(:dish_name, :content, :genre_id) # 追加
+    end
+end
+```
+
+---
+
+`/app/views/application.html.erb`
+```html
+<!DOCTYPE html>
+<html>
+  <!-- 省略 -->
+
+  <body>
+
+    <!-- 追加　ここから -->
+    <header class="header display-f">
+      <% if user_signed_in? %>
+        <div class="width-200 text-align-c padding-l-15p">
+          <%= link_to "新規料理", new_cooking_path, class: "color-white" %>
+        </div>
+        <div class="width-200 text-align-c">
+          <%= link_to "新規ジャンル", new_genre_path, class: "color-white" %>
+        </div>
+        <div class="width-200 text-align-c">
+          <%= link_to "料理一覧", posts_path, class: "color-white" %>
+        </div>
+        <div class="width-200 text-align-c">
+          <%= link_to 'ログアウト', destroy_user_session_path, data: { turbo_method: :delete }, class: "color-white" %>
+        </div>
+      <% else %>
+        <div class="width-200 text-align-c padding-l-15p">
+          <%= link_to "サインアップ", new_user_registration_path, class: "color-white" %>
+        </div>
+        <div class="width-200 text-align-c">
+          <%= link_to "ログイン", new_user_session_path, class: "color-white" %>
+        </div>
+      <% end %>
+    </header>
+    <!-- 追加　ここまで -->
+
+    <%= yield %>
+  </body>
+</html>
+```
+
+---
+
+`/app/views/devise/registrations/new.html.erb`
+
+```html
+<div class="padding-l-15p"> <!-- 追加 -->
+  <h2>サインアップ</h2> <!-- 編集 -->
+
+  <%= form_with model: @user, url: registration_path(resource_name) do |f| %> <!-- 編集 -->
+    <%= render "devise/shared/error_messages", resource: resource %>
+    
+    <div class="field">
+      <%= f.label :メールアドレス %><br /> <!-- 編集 -->
+      <%= f.email_field :email, autocomplete: "email" %> <!-- 編集 -->
+    </div>
+
+    <div class="field">
+      <%= f.label :パスワード %> <!-- 編集 -->
+      <% if @minimum_password_length %>
+        <em>(<%= @minimum_password_length %> 文字以上)</em>
+      <% end %><br />
+      <%= f.password_field :password, autocomplete: "new-password" %>
+    </div>
+
+    <div class="field">
+      <%= f.label :パスワードの確認 %><br /> <!-- 編集 -->
+      <%= f.password_field :password_confirmation, autocomplete: "new-password" %>
+    </div>
+
+    <div class="actions">
+      <%= f.submit "サインアップ" %> <!-- 編集 -->
+    </div>
+  <% end %>
+
+  <%= render "devise/shared/links" %>
+</div> <!-- 追加 -->
+```
+
+---
+
+`/app/views/devise/sessions/new.html.erb`
+```html
+<div class="padding-l-15p"> <!-- 追加 -->
+
+  <h2>ログイン</h2> <!-- 編集 -->
+
+  <%= form_with model: @user, url: session_path(resource_name) do |f| %>  <!-- 編集 -->
+    <div class="field">
+      <%= f.label :メールアドレス %><br /> <!-- 編集 -->
+      <%= f.email_field :email, autofocus: true, autocomplete: "email" %>
+    </div>
+
+    <div class="field">
+      <%= f.label :パスワード %><br /> <!-- 編集 -->
+      <%= f.password_field :password, autocomplete: "current-password" %>
+    </div>
+
+    <% if devise_mapping.rememberable? %>
+      <div class="field">
+        <%= f.check_box :remember_me %>
+        <%= f.label :ログイン状態を保持 %> <!-- 編集 -->
+      </div>
+    <% end %>
+
+    <div class="actions">
+      <%= f.submit "ログイン" %> <!-- 編集 -->
+    </div>
+  <% end %>
+
+  <%= render "devise/shared/links" %>
+
+</div> <!-- 追加 -->
+```
+
+---
+
+`/app/views/devise/shared/_links.html.erb`
+```html
+<%- if controller_name != 'sessions' %>
+  <%= link_to "ログイン", new_session_path(resource_name) %><br /> <!-- 編集 --> 
+<% end %>
+
+<%- if devise_mapping.registerable? && controller_name != 'registrations' %>
+  <%= link_to "サインアップ", new_registration_path(resource_name) %><br /> <!-- 編集 -->
+<% end %>
+
+<%- if devise_mapping.recoverable? && controller_name != 'passwords' && controller_name != 'registrations' %>
+  <%= link_to "パスワードをお忘れですか?", new_password_path(resource_name) %><br /> <!-- 編集 -->
+<% end %>
+
+<!-- 省略 --> 
+```
+
+---
+
+`/app/views/genres/new.html.erb`
+```html
+<div class="padding-l-15p"> <!-- 追加 -->
+  <h1>新規ジャンル</h1> <!-- 編集 -->
+
+  <%= render "form", genre: @genre %>
+
+</div> <!-- 追加 -->
+
+<!-- 削除　ここから -->
+<br>
+
+<div>
+  <%= link_to "Back to genres", genres_path %>
+</div>
+<!-- 削除　ここまで -->
+```
+
+---
+
+`/app/views/genres/_form.html.erb`
+```html
+<%= form_with(model: genre) do |form| %>
+  <% if genre.errors.any? %>
+    <div style="color: red">
+      <h2><%= pluralize(genre.errors.count, "error") %> prohibited this genre from being saved:</h2>
+
+      <ul>
+        <% genre.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.label :ジャンル名, style: "display: block" %> <!-- 編集 -->
+    <%= form.text_field :genre_name %>
+  </div>
+
+  <br> <!-- 追加 -->
+
+  <div>
+    <%= form.submit '登録' %> <!-- 編集 -->
+  </div>
+<% end %>
+```
+
+---
+
+`/app/views/cookings/index.html.erb`
+```html
+<p style="color: green"><%= notice %></p>
+
+<h1>料理一覧</h1> <!-- 編集 -->
+
+<!-- 追加　ここから -->
+<h2>検索</h2>
+<%= form_with url: cookings_path, method: :get do |f| %>
+  <%= f.text_field :title, placeholder: "料理名で検索" %>
+  <%= f.collection_select(:genre_id, Genre.all, :id, :genre_name, include_blank: "  " ) %>
+  <%= f.submit "検索" %>
+<% end %>
+
+<br>
+
+<h2>一覧</h2>
+<!-- 追加　ここまで -->
+
+<div id="cookings">
+
+<!-- 追加　ここから -->
+<table class="table">
+  <thead>
+    <tr>
+      <th class="border width-200">料理名</th>
+      <th class="border width-200">ジャンル</th>
+      <th class="border width-600">説明</th>
+      <th></th>
+    </tr>
+  </thead>
+<!-- 追加　ここまで -->
+
+  <% @cookings.each do |cooking| %>
+    <%= render cooking %> <!-- 削除 -->
+
+  　<!-- 追加　ここから -->
+    <tr>
+      <td class="border">
+        <%= cooking.dish_name %>
+      </td>
+      <td class="border">
+        <%= cooking.genre.genre_name %>
+      </td>
+      <td class="border">
+        <%= cooking.content %>
+      </td>
+      <!-- 追加　ここまで -->
+      <td> <!-- 編集 -->
+        <%= link_to "料理詳細", cooking %> <!-- 編集 -->
+      </td> <!-- 編集 -->
+    </tr> <!-- 追加 -->
+  <% end %>
+</div>
+
+<%= link_to "New cooking", new_cooking_path %> <!-- 削除 -->
+
+```
+
+---
+
+`/app/views/cookings/new.html.erb`
+```html
+<div class="padding-l-15p"> <!-- 追加 -->
+  <h1>新規料理</h1> <!-- 編集 -->
+
+  <%= render "form", cooking: @cooking %>
+
+</div> <!-- 追加 -->
+
+<!-- 削除　ここから -->
+<br>
+
+<div>
+  <%= link_to "Back to cookings", cookings_path %>
+</div>
+<!-- 削除　ここから -->
+```
+
+---
+
+`/app/views/cookings/_form.html.erb`
+```html
+<%= form_with(model: cooking) do |form| %>
+  <% if cooking.errors.any? %>
+    <div style="color: red">
+      <h2><%= pluralize(cooking.errors.count, "error") %> prohibited this cooking from being saved:</h2>
+
+      <ul>
+        <% cooking.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.label :料理名, style: "display: block" %> <!-- 編集 -->
+    <%= form.text_field :dish_name %>
+  </div>
+
+  <div>
+    <%= form.label :説明, style: "display: block" %> <!-- 編集 -->
+    <%= form.text_area :content %>
+  </div>
+
+  <!-- 追加　ここから -->
+  <div>
+    <%= form.label :genre_ids, "ジャンル" %><br>
+    <%= form.collection_select(:genre_id, Genre.all, :id, :genre_name, include_blank: "選択して下さい" ) %>
+  </div>
+
+  <br>
+  <!-- 追加　ここまで -->
+
+  <div>
+    <%= form.submit '登録' %> <!-- 編集 -->
+  </div>
+<% end %>
+```
+
+---
+
+`/app/views/cookings/show.html.erb`
+```html
+<div class="padding-l-15p">
+  <p style="color: green"><%= notice %></p>
+
+  <h1>料理詳細</h1> <!-- 追加 -->
+  
+  <%= render @cooking %>
+
+</div>
+
+<!-- 削除　ここから -->
+<div>
+  <%= link_to "Edit this cooking", edit_cooking_path(@cooking) %> |
+  <%= link_to "Back to cookings", cookings_path %>
+
+  <%= button_to "Destroy this cooking", @cooking, method: :delete %>
+</div>
+<!-- 削除　ここまで -->
+```
+
+---
+
+`/app/views/cookings/_cooking.html.erb`
+```html
+<div id="<%= dom_id cooking %>">
+  <p>
+    <strong>料理名:</strong> <!-- 編集 -->
+    <%= cooking.dish_name %>
+  </p>
+
+  <!-- 追加　ここから -->
+  <p>
+    <strong>ジャンル:</strong>
+    <%= cooking.genre.genre_name %>
+  </p>
+  <!-- 追加　ここまで -->
+
+  <p>
+    <strong>説明:</strong> <!-- 編集 -->
+    <%= cooking.content %>
+  </p>
+
+</div>
+
+```
+
+---
+
+`/app/assets/stylesheets/application.css`
+```css
+/*
+ 省略
+ */
 
  /* リンク下線消し */
  a {
