@@ -1,19 +1,14 @@
 # 6.1 Ruby on Rails：データベース基礎
 
 ## 目次
-- [6.1 Ruby on Rails：データベース基礎](#61-ruby-on-railsデータベース基礎)
-  - [目次](#目次)
-  - [6.3 Ruby on Rails: ActiveRecordでの効率的なデータ取得](#63-ruby-on-rails-activerecordでの効率的なデータ取得)
+
+  - [ActiveRecordでの効率的なデータ取得](#activerecordでの効率的なデータ取得)
     - [(1) 「N+1問題」とは](#1-n1問題とは)
     - [(2) 「N+1問題」解消方法](#2-n1問題解消方法)
-      - [(a) includesを使用する](#a-includesを使用する)
-      - [(b) preloadを使用する](#b-preloadを使用する)
-      - [(c) eager\_loadを使用する](#c-eager_loadを使用する)
-      - [(d) joinsを使用する](#d-joinsを使用する)
     - [(3) サブクエリの作り方](#3-サブクエリの作り方)
     - [(4) 練習](#4-練習)
-      - [解答(練習)](#解答練習)
-## 6.3 Ruby on Rails: ActiveRecordでの効率的なデータ取得
+
+## ActiveRecordでの効率的なデータ取得
 
 ここではActiveRecordの応用的な利用方法「N+1問題について」「サブクエリの作り方」について学習します。
 
