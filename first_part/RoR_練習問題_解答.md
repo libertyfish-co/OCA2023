@@ -10,6 +10,8 @@
  - [問題5](#問題5)
  - [問題6](#問題6)
  - [問題7](#問題7)
+ - [問題8](#問題8)
+ - [問題9](#問題9)
 
 </details>
 
@@ -3351,7 +3353,7 @@ rails g devise:install
 # Deviseでモデルの作成
 rails g devise User
 
-# Cookingモデル、Gereモデル、Relationモデルの作成
+# Cookingモデル、Gereモデルの作成
 rails g scaffold Cooking dish_name:string content:text user:references genre_id:integer
 rails g scaffold Genre genre_name:string
 
@@ -3383,11 +3385,6 @@ gem 'devise'    # 追加
 class DeviseCreateUsers < ActiveRecord::Migration[7.1]
   def change
     create_table :users do |t|
-      ## Database authenticatable
-      t.string :email,              null: false, default: ""
-      t.string :encrypted_password, null: false, default: ""
-
-      t.string :name # 追加
 
       # 省略
 
@@ -4010,3 +4007,153 @@ end
 ```
 
 </details>
+
+<br>
+
+---
+
+### 問題9
+<details>
+
+ターミナル
+```sh
+rails new book_sharing
+
+# Gemfileを編集後
+rails g devise:install
+
+# Deviseでモデルの作成
+rails g devise User
+
+# Cookingモデル、Gereモデル、Relationモデルの作成
+rails g scaffold Book title:string content:text
+rails g scaffold Genre genre_name:string
+
+# マイグレーションファイルを編集してから
+rails db:migrate
+
+# コントローラーの作成
+rails g devise:controllers Users
+
+# ビューの作成
+rails g devise:views
+```
+
+---
+
+`/Gemfile`
+```gemfile
+# 省略
+
+gem 'devise'    # 追加
+```
+
+---
+
+`/db/migrate/xxxxxxxxxxxxxx_devise_create_users.rb`
+```rb
+# frozen_string_literal: true
+
+class DeviseCreateUsers < ActiveRecord::Migration[7.1]
+  def change
+    create_table :users do |t|
+      ## Database authenticatable
+      t.string :email,              null: false, default: ""
+      t.string :encrypted_password, null: false, default: ""
+
+      t.string :name # 追加
+
+      # 省略
+
+      ## Trackable
+      # #を外す　ここから
+      t.integer  :sign_in_count, default: 0, null: false
+      t.datetime :current_sign_in_at
+      t.datetime :last_sign_in_at
+      t.string   :current_sign_in_ip
+      t.string   :last_sign_in_ip
+      # #を外す　ここまで
+
+      # 省略
+  end
+end
+```
+
+---
+
+`/app/models/user.rb`
+```rb
+class User < ApplicationRecord
+  # Include default devise modules. Others available are:
+  # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
+  devise :database_authenticatable, :registerable,
+         :recoverable, :rememberable, :validatable
+
+  has_many :cookings, dependent: :destroy # 追加
+  has_many :genres                        # 追加
+
+end
+```
+
+---
+
+`/app/models/cooking.rb`
+```rb
+class Cooking < ApplicationRecord
+    # 追加　ここから
+    belongs_to :user
+    belongs_to :genre
+    # 追加　ここまで
+end
+```
+
+---
+
+`/app/models/genre.rb`
+```rb
+class Genre < ApplicationRecord
+    has_many :cookings # 追加
+end
+```
+
+---
+
+`/config/routes.rb`
+```rb
+Rails.application.routes.draw do
+  resources :genres
+  resources :cookings
+  devise_for :users
+
+  root to: "cookings#index" # 追加
+  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
+
+  # 省略
+end
+
+```
+
+`/app/controllers/application_controller.rb`
+```rb
+class ApplicationController < ActionController::Base
+  # 追加　ここから
+  before_action :configure_permitted_parameters, if: :devise_controller?
+
+  def after_sign_in_path_for(resource)
+      cookings_path
+  end
+
+  def after_sign_out_path_for(resource)
+      root_path
+  end
+
+  protected
+
+  def configure_permitted_parameters
+    devise_parameter_sanitizer.permit(:sign_up, keys: [:email])
+  end
+  # 追加　ここまで
+end
+```
+
+</ditails>
