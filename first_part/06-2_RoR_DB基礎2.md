@@ -1,4 +1,4 @@
-# 6.1 Ruby on Rails：データベース基礎
+# 6 Ruby on Rails：データベース基礎
 
 ## 目次
 
