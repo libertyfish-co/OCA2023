@@ -137,17 +137,17 @@ HTMLは、ウェブページを作成するための基本的な構造を持っ�
 
 + **`<a href="URL">`**  
   **リンク**タグ。`href`属性でリンク先のURLを指定。  
-  <img src="images/HTML_CSS/HTML9.png" width="300px"> 
+  <img src="images/HTML_CSS/HTML5.png" width="400px">   
 
 + **`<ul>`, `<ol>`, `<li>`**   
   **リスト**タグ。`<ul>`は順不同リスト、`<ol>`は順序付きリスト、`<li>`はリスト項目。  
-  <img src="images/HTML_CSS/HTML10.png" width="300px"> 
+  <img src="images/HTML_CSS/HTML9.png" width="300px"> 
 
 + **`<img src="画像のURL" alt="画像の説明">`**  
-  **画像**タグ。`src`で画像のURL、`alt`で画像の説明を指定。  
-  <img src="images/HTML_CSS/HTML11.png" width="300px"> 
+  **画像**タグ。`src`で画像のURL、`alt`で画像の説明を指定。 
+  <img src="images/HTML_CSS/HTML10.png" width="500px">  
 
-[このほかにも様々なタグがあります。](04-02_HTMLタグ集.md)
+[このほかにも様々なタグがあります。](04-02_HTMLタグ集.md)  
 
 <br>
 
@@ -227,19 +227,36 @@ p {
 }
 ```
 
+プレビュー:  
+<img src="images/HTML_CSS/HTML11.png" width="300px">  
+
 <br>
 
 ---
 
 ### CSSでよく使われるタグ
-| プロパティ | 説明 |
-|---|---|
-| **`color`** | **文字色** を変更します。 |
-| **`font-size`** | **文字の大きさ** を変更します。 |
-| **`background-color`**| **背景色** を変更します。 |
-| **`text-align`** | **文字の配置** を変更します（左寄せ、中央寄せなど）。 |
+
+| | |
 | **`margin`** | **外部余白（マージン）** を調整します。 |
 | **`padding`** | **内部余白（パディング）** を調整します。 |
+
++ **`color`**  
+  **文字色** を変更します。  
+  <img src="images/HTML_CSS/HTML12.png" width="300px">  
+
++ **`background-color`**  
+  **背景色** を変更します。  
+  <img src="images/HTML_CSS/HTML13.png" width="300px">  
+
++ **`font-size`**  
+   **文字の大きさ** を変更します。  
+  <img src="images/HTML_CSS/HTML14.png" width="300px">  
+
++ **`text-align`**  
+  **文字の配置** を変更します（左寄せ、中央寄せなど）。   
+  <img src="images/HTML_CSS/HTML15.png" width="300px">  
+
+
 
 [このほかにも様々なタグがあります。](04-03_CSSタグ集.md)
 
