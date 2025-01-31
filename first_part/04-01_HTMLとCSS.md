@@ -1,5 +1,5 @@
 
-# 4 HTML／CSS
+# 4 HTMLとCSS
 
 ## 目次
 + [フロントエンドにおけるHTMLとCSS](#フロントエンドにおけるhtmlとcss)
