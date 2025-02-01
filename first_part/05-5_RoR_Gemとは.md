@@ -1,20 +1,86 @@
 ## 5.5 Ruby on Rails：Gemとは
 
-Railsは様々なGemが集まったものだというのは、もうご存知だと思います。Gemを使いこなすためにはREADMEはもちろん、Gemのソースコードを読む必要が出てきます。また、Gemのバージョン管理、依存関係を解消してくれるbundlerの存在も欠かせません。簡単にbundlerとGemの構成を確認してみましょう。
+Railsは様々な Gem が集まったものです。  
+Gem とは、Ruby で作られたライブラリやプログラムのパッケージのことです。  
+Ruby や Rails の機能を拡張するために使われ、Gem を利用することで、開発を効率的に進めることができます。  
+どれくらい開発効率が上がるのかを、Gem を使ったログイン機能（devise）で見てみましょう。
 
-### 5.5.1 bundlerについて
-bundlerは、Gemのバージョン管理と依存関係を解決した環境を提供してくれるとても便利なツールです。bundler自体もGemとして提供されています。
-```sh
-$ gem install bundle
+devise を使わずにログイン機能を作った場合（コントローラの処理）
+```rb
+class SessionsController < ApplicationController
+  def new
+  end
+
+  def create
+    user = User.find_by(email: params[:session][:email])
+
+    if user && user.password == params[:session][:password]
+      session[:user_id] = user.id
+      redirect_to root_path, notice: "ログインしました"
+    else
+      flash.now[:alert] = "メールアドレスまたはパスワードが間違っています"
+      render :new
+    end
+  end
+
+  def destroy
+    session[:user_id] = nil
+    redirect_to login_path, notice: "ログアウトしました"
+  end
+end
 ```
-あとは、`Gemfile`さえ用意すれば`bundle install`コマンドでGemfile.lockを作成してくれます。bundlerに関して、以下の2点は押さえておきましょう。
+
+deviseを使った場合（コントローラの処理）
+```rb
+class ApplicationController < ActionController::Base
+  before_action :configure_permitted_parameters, if: :devise_controller?
+
+  private
+
+  def configure_permitted_parameters
+    devise_parameter_sanitizer.permit(:sign_up, keys: [:name])
+  end
+end
+```
+このようにGemを使うことで、実装をより簡単にし、開発のスピードを各段に上げてくれます。
+
+Gem の便利さは分かりましたが、Gem を使うにあたって README を読んで使い方を学び、Gem のソースコードを読むことで、さらに深い理解が得られ、もしそのGemの機能で問題が発生したときに対応が容易になります。  
+deviseのソースコード：https://github.com/heartcombo/devise  
+また、Gem のバージョン管理、依存関係を解消してくれる bundler の存在も欠かせません。簡単に bundler と Gem の構成を確認してみましょう。
+
+### 5.5 まとめ
+
+* Gemを利用することで、機能実装をより簡単にすることができます。
+
+* Gemを使うときは、そのGemのREADMEなどで使い方を学び、さらに深い理解を得たいときはソースコードを見ましょう！
+
+### 5.5.1 bundler について
+
+Gem を使う上ではバージョン管理と依存関係について、注意が必要です。  
+Gemfile の Gem とインストールされた Gem のバージョンが違ったり、Gem 同士が
+どちらかを必要としているときに Gem がインストールされていないときに問題が発生します。  
+そんな時に、 bundler は、Gem のバージョン管理と依存関係を解決した環境を提供してくれるとても便利なツールです。  
+bundler自体もGemとして提供されています。
+
+```sh
+$ gem install bundler
+```
+でbundlerをインストールします。  
+あとは、`Gemfile`で追加したいGemを用意して
+```sh
+$ bundle install
+```
+でGemfile.lockを作成してくれます。  
+Gemfile.lockとは、Gemfileをもとに実際にインストールされたgemの一覧とバージョンが記載されたファイルです。  
+複数人で開発を進める場合、Gemfile.lockの状態を一致させることで、すべての開発者が一致した環境で作業でき、デプロイの際に、予期せぬGemでの不具合を避けることができます。  
+bundlerに関して、以下の2点は押さえておきましょう。
 
 #### bundle execコマンド
 例えば、料理を作るときに特定のレシピを使いたいときがあるとします。  
 しかし、キッチンの中には同じ名前の材料が複数あり、形の悪いものや腐ったものがあるかもしれません。  
 間違った食材を使ってしまったら、味や質に影響が出ます。  
 そこで`bundle exec`を使うことで正しい材料を選択することができます。  
-ターミナル等でrspecを実行するとき、下記のとおりコマンドの前に書いて実行すると、Gemfileに沿ったバージョンのrspecを実行してくれます。
+ターミナル等でrspecを実行するとき、下記のとおりコマンドの前に書いて実行すると、Gemfile.lockに沿ったバージョンのrspecを実行してくれます。
 ```sh
 $ bundle exec rspec
 ```
@@ -46,6 +112,15 @@ bundlerでインストールしたGemに対するものは、`bundle exec`て
 
 <http://bundler.io/docs.html>  
 
+### 5.5.1 まとめ
+* bundler は、Gem の**バージョン管理と依存関係を解決した環境**を提供してくれるとても便利なツールです。
+
+* Gemfile.lockとは、実際にインストールされたgemの一覧とバージョンが記載されたファイルです。  
+Gemfile.lockをメンバーで一致させておき、デプロイ時のGemでのエラーを未然に防ぎましょう！
+
+* `bundle exec`コマンドでGemfile.lock通り（正しいバージョン）にコマンドを実行してくれます。
+
+* Gemfileには、Gemの名前とバージョンを書き、明示的にバージョンを指定しましょう！
 
 ### 5.5.2 Gemの構成とコードリーディング
 
