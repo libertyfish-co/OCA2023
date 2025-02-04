@@ -4,8 +4,8 @@
 ## 目次
 + [CSSの書き方](#cssの書き方)  
   + [CSSの基本構造](#cssの基本構造)  
-  + [CSSでよく使われるタグ](#cssでよく使われるタグ)  
-+ [練習問題：CSSを書いてみよう](#練習問題cssを書いてみよう)  
+  + [CSSでよく使われるプロパティ](#cssでよく使われるプロパティ)  
+  + [問題](#問題)  
 
 <br>
 
@@ -25,7 +25,7 @@ CSSはHTMLの要素にスタイル（デザイン）を適用するために使�
 - **`セレクタ`**  
   **スタイルを適用したいHTML要素**を指定します。例えば、`h1`タグにスタイルを適用したい場合、セレクタは`h1`になります。
   <details>
-  <summary>セレクタ一覧</summary>
+  <summary>セレクタ一覧(クリックすると開きます)</summary>
 
   #### 要素セレクタ
   | セレクタ          | 説明                                      | 例                                  |
@@ -163,15 +163,54 @@ h1 {
 
 ---
 
-### CSSでよく使われるタグ
+### CSSでよく使われるプロパティ
+
+以下はCSSでよく見かけるプロパティです。
+
+ <details open>
+ <summary>基本的なプロパティ</summary>
+
++ **`color`**  
+  **文字色** を変更します。  
+  ```css
+  .example {
+    color: blue; /* 文字色を青に設定 */
+  }
+  ```
+
++ **`background-color`**  
+  **背景色** を変更します。  
+  ```css
+  .example {
+    background-color: yellow; /* 背景色を黄色に設定 */
+  }
+  ```
+
++ **`font-size`**  
+  **文字の大きさ** を変更します。  
+  ```css
+  .example {
+    font-size: 18px; /* 文字の大きさを18pxに設定 */
+  }
+  ```
+
++ **`text-align`**  
+  **文字の配置** を変更します（左寄せ、中央寄せなど）。  
+  ```css
+  .example {
+    text-align: center; /* 文字を中央に配置 */
+  }
+  ```
 
 + **`margin`**  
   **外部余白（マージン）** を調整します。  
   ```css
   .example {
-      margin: 20px; /* すべての方向に20pxの余白を設定 */
+
+    margin: 20px; /* すべての方向に20pxの余白を設定 */
   }
   ```
+
 + **`border`**  
   **線(ボーダー)** を調整します。  
   ```css
@@ -203,52 +242,145 @@ h1 {
     height: 200px; /* 縦幅を200pxに設定 */
   }
   ```
+</details>
 
-  <img src="images/HTML_CSS/CSS1.png" width="700px">  
 
-+ **`color`**  
-  **文字色** を変更します。  
-  <img src="images/HTML_CSS/HTML12.png" width="300px">  
+<details>
+<summary>背景関連</summary>
+
++ **`background-image`**  
+  **背景画像** を設定します。  
   ```css
   .example {
-    color: blue; /* 文字色を青に設定 */
+    background-image: url('image.jpg'); /* 背景画像を設定 */
   }
   ```
 
-+ **`background-color`**  
-  **背景色** を変更します。  
-  <img src="images/HTML_CSS/HTML13.png" width="300px">  
++ **`background-position`**  
+  **背景画像の位置** を調整します。  
   ```css
   .example {
-    background-color: yellow; /* 背景色を黄色に設定 */
+    background-position: center; /* 背景画像を中央に配置 */
   }
   ```
 
-+ **`font-size`**  
-   **文字の大きさ** を変更します。  
-  <img src="images/HTML_CSS/HTML14.png" width="300px">  
++ **`background-size`**  
+  **背景画像のサイズ** を調整します。  
   ```css
   .example {
-    font-size: 18px; /* 文字の大きさを18pxに設定 */
-  }
-  ```
-  
-+ **`text-align`**  
-  **文字の配置** を変更します（左寄せ、中央寄せなど）。   
-  <img src="images/HTML_CSS/HTML15.png" width="300px">  
-  ```css
-  .example {
-    text-align: center; /* 文字を中央に配置 */
+    background-size: cover; /* 背景画像を要素に合わせて拡大または縮小 */
   }
   ```
 
-[このほかにも様々なタグがあります。](04-03_CSSタグ集.md)  
++ **`background-repeat`**  
+  **背景画像の繰り返し** を設定します。  
+  ```css
+  .example {
+    background-repeat: no-repeat; /* 背景画像の繰り返しを無効化 */
+  }
+  ```
+
+</details>
+
+
+<details>
+<summary>フォント・テキスト関連(クリックすると開きます)</summary>
+
++ **`font-family`**  
+  **フォント** を指定します。  
+  ```css
+  .example {
+    font-family: 'Arial', sans-serif; /* フォントをArialに設定 */
+  }
+  ```
+
++ **`font-weight`**  
+  **文字の太さ** を調整します。  
+  ```css
+  .example {
+    font-weight: bold; /* 文字を太字に設定 */
+  }
+  ```
+
++ **`font-style`**  
+  **フォントのスタイル** を変更します。  
+  ```css
+  .example {
+    font-style: italic; /* 文字を斜体に設定 */
+  }
+  ```
+
++ **`text-transform`**  
+  **テキストの変換** を設定します（大文字、小文字など）。  
+  ```css
+  .example {
+    text-transform: uppercase; /* 文字をすべて大文字に設定 */
+  }
+  ```
+
++ **`text-shadow`**  
+  **テキストの影** を設定します。  
+  ```css
+  .example {
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* テキストに影を設定 */
+  }
+  ```
+
++ **`line-height`**  
+  **行の高さ** を設定します。  
+  ```css
+  .example {
+    line-height: 1.5; /* 行の高さを1.5倍に設定 */
+  }
+  ```
+
+</details>
+
+<details>
+<summary>その他のプロパティ(クリックすると開きます)</summary>
+
++ **`z-index`**  
+  **要素の重なり順序** を設定します。  
+  ```css
+  .example {
+    z-index: 10; /* 要素の重なり順序を設定 */
+  }
+  ```
+
++ **`display`**  
+  **要素の表示方法** を設定します。  
+  ```css
+  .example {
+    display: block; /* 要素をブロック表示 */
+  }
+  ```
+
++ **`position`**  
+  **要素の位置指定** を設定します。  
+  ```css
+  .example {
+    position: relative; /* 要素を相対位置で設定 */
+  }
+  ```
+
++ **`opacity`**  
+  **要素の不透明度** を変更します。  
+  ```css
+  .example {
+    opacity: 0.5; /* 要素の不透明度を50%に設定 */
+  }
+  ```
+
+</details>
+
+これ以外にも沢山のプロパティがあります。検索して調べてみましょう。
 
 <br>
 
 ---
 
-## 練習問題：CSSを書いてみよう  
+### 問題
+
 HTMLのページにCSSを追加して、見栄えを整えてみましょう。  
 
 1. **h1の文字色を青に変更してください**  

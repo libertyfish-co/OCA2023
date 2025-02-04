@@ -9,6 +9,7 @@
   + [HTMLでよく使われるタグ](#htmlでよく使われるタグ)  
   + [相対パスについて](#相対パスについて)
   + [HTMLを書いてみよう](#htmlを書いてみよう)  
+  + [問題](#問題) 
 
 <br>
 
@@ -221,6 +222,11 @@ HTMLの要素には、追加の情報を持たせるための「**属性**」を
 
 ### HTMLでよく使われるタグ
 
+以下はHTMLでよく見かけるタグです。
+
+<details open>
+<summary>基本のタグ</summary>
+
 + **`<h1>`～`<h6>`**  
   見出しタグ。数字が小さいほど**重要度が高い**。  
   ```html
@@ -230,12 +236,25 @@ HTMLの要素には、追加の情報を持たせるための「**属性**」を
   ```
   <img src="images/HTML_CSS/HTML7.png" width="300px">  
 
+---
+
 + **`<p>`**  
   **段落**タグ。テキストを段落として表示。  
   ```html
   <p>段落の文章です。</p>
   ```
   <img src="images/HTML_CSS/HTML8.png" width="300px"> 
+
+---
+
++ **`<strong>`**  
+  **強調**タグ。テキストを強調して表示。  
+  ```html
+  <strong>強調されています。</strong>
+  ```
+  <img src="images/HTML_CSS/HTML28.png" width="300px"> 
+
+---
 
 + **`<br>`**  
   **改行**タグ。テキストを改行する。  
@@ -254,6 +273,7 @@ HTMLの要素には、追加の情報を持たせるための「**属性**」を
 
   <img src="images/HTML_CSS/HTML20.png" width="450px">   
 
+---
 
 + **`<a href="URL">`**  
   **リンク**タグ。`href`属性でリンク先のURLを指定。  
@@ -261,6 +281,141 @@ HTMLの要素には、追加の情報を持たせるための「**属性**」を
   <a href="https://www.libertyfish.co.jp">リバティ・フィッシュ株式会社のWebサイト</a>
   ```
   <img src="images/HTML_CSS/HTML5.png" width="400px">   
+
+---
+
+</details>
+
+<details>
+<summary>テーブル系タグ(クリックすると開きます)</summary>
+
++ **`<table>`**  
+  **表（テーブル）を作成する**タグ。
+  ```html
+  <table>
+    <tr>
+      <th>見出し1</th>
+      <th>見出し2</th>
+    </tr>
+    <tr>
+      <td>データ1</td>
+      <td>データ2</td>
+    </tr>
+  </table>
+  ```
+  <img src="images/HTML_CSS/HTML21.png" width="200px">  
+
+---
+
++ **`<tr>`**  
+  **行（テーブルロウ）を作成する**タグ。
+  ```html
+  <tr>
+    <td>データ1</td>
+    <td>データ2</td>
+  </tr>
+  ```
+  各行に`<td>`（セル）を配置してデータを表示する。  
+  <img src="images/HTML_CSS/HTML22.png" width="200px">  
+
+---
+
++ **`<th>`**  
+  **見出しセルを作成する**タグ。デフォルトで**太字＆中央寄せ**。
+  ```html
+  <tr>
+    <th>見出し1</th>
+    <th>見出し2</th>
+  </tr>
+  ```
+  <img src="images/HTML_CSS/HTML23.png" width="200px">  
+
+---
+
++ **`<td>`**  
+  **通常のセル（データ）を作成する**タグ。
+  ```html
+  <tr>
+    <td>データ1</td>
+    <td>データ2</td>
+  </tr>
+  ```
+  <img src="images/HTML_CSS/HTML22.png" width="200px">  
+
+---
+
++ **`colspan`** / **`rowspan`**  
+  **セルを結合する**属性。`colspan`は横方向、`rowspan`は縦方向に結合。
+  ```html
+  <table>
+    <tr>
+      <th colspan="2">結合されたセル</th>
+    </tr>
+    <tr>
+      <td rowspan="2">縦に結合</td>
+      <td>データ1</td>
+    </tr>
+    <tr>
+      <td>データ2</td>
+    </tr>
+  </table>
+  ```
+  <img src="images/HTML_CSS/HTML24.png" width="300px">  
+
+---
+
++ **`<caption>`**  
+  **テーブルのタイトルを付ける**タグ。
+  ```html
+  <table>
+    <caption>売上表</caption>
+    <tr>
+      <th>商品</th>
+      <th>売上</th>
+    </tr>
+    <tr>
+      <td>りんご</td>
+      <td>1000円</td>
+    </tr>
+  </table>
+  ```
+  <img src="images/HTML_CSS/HTML25.png" width="250px">  
+
+---
+
++ **`<thead>`, `<tbody>`, `<tfoot>`**  
+  **テーブルの構造を整理する**タグ。
+  ```html
+  <table>
+    <thead>
+      <tr>
+        <th>商品</th>
+        <th>価格</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>りんご</td>
+        <td>100円</td>
+      </tr>
+    </tbody>
+    <tfoot>
+      <tr>
+        <td>合計</td>
+        <td>100円</td>
+      </tr>
+    </tfoot>
+  </table>
+  ```
+  <img src="images/HTML_CSS/HTML26.png" width="250px">  
+
+---
+
+</details>
+
+<details>
+<summary>その他のタグ(クリックすると開きます)</summary>
+
 
 + **`<ul>`, `<ol>`, `<li>`**   
   **リスト**タグ。`<ul>`は順不同リスト、`<ol>`は順序付きリスト、`<li>`はリスト項目。  
@@ -277,12 +432,16 @@ HTMLの要素には、追加の情報を持たせるための「**属性**」を
   ```
   <img src="images/HTML_CSS/HTML9.png" width="300px"> 
 
+---
+
 + **`<img src="画像のURL" alt="画像の説明">`**  
   **画像**タグ。`src`で画像のURL(もしくはパス)、`alt`で画像の説明を指定。  
   ```html
   <img src="images/猫.jpg" alt="猫の画像">
   ```
   <img src="images/HTML_CSS/HTML10.png" alt="imgタグの説明画像" width="500px">  
+
+---
 
 + **`<input>`**  
   ユーザーからの**入力を受け取る**ためのタグ。  
@@ -319,6 +478,8 @@ HTMLの要素には、追加の情報を持たせるための「**属性**」を
     | **`reset`** | フォームの入力をリセットするボタン。|
     | **`button`** | 一般的なボタン（JavaScriptなどで使用）。|
 
+---
+
 + **`<form>`**  
   **フォームを作成する**タグ。ユーザーからの入力を受け取る。
 
@@ -331,7 +492,23 @@ HTMLの要素には、追加の情報を持たせるための「**属性**」を
 
   <img src="images/HTML_CSS/HTML19.png" width="300px">  
 
-[このほかにも様々なタグがあります。](04-02_HTMLタグ集.md)  
+---
+
++ **`<!-- -->`**
+  **コメントを記述する**タグ。コードの中で説明やメモとして使用する。実際のページには表示されない。
+
+  ```html
+  <!-- 例: 以下はフォームのコード -->
+  <form action="/submit" method="post">
+    <input type="text" name="username">
+    <input type="submit" value="送信">
+  </form>
+  
+  ```
+
+</details>
+
+この他にもたくさんのタグが存在します。検索して調べてみましょう。  
 
 <br>
 
@@ -431,3 +608,128 @@ HTMLの要素には、追加の情報を持たせるための「**属性**」を
   ```
 
   </details>
+
+---
+
+### 問題
+
+1. 以下のコードの「?」の部分に適切な見出しタグ（`h1` から `h6`）を入れてください。
+
+    ```html
+    <?>見出しレベル1<?>
+    <?>見出しレベル2<?>
+    <?>見出しレベル3<?>
+    ```
+
+    <details>
+    <summary>解答例</summary>
+
+      ```html
+      <h1>見出しレベル1</h1>
+      <h2>見出しレベル2</h2>
+      <h3>見出しレベル3</h3>
+      ```
+    </details>
+
+1. 箇条書きリスト（`ul`）を使って、以下の項目をリストとして表示してください。
+
+    - HTML
+    - CSS
+    - JavaScript
+
+    <details>
+    <summary>解答例</summary>
+
+    ```html
+    <ul>
+      <li>HTML</li>
+      <li>CSS</li>
+      <li>JavaScript</li>
+    </ul>
+    ```
+    </details>
+
+1. 以下のリンクを作成してください。
+    - `https://www.example.com` へのリンク
+    - リンクテキストは「サンプルサイト」
+    
+    <details>
+    <summary>解答例</summary>
+
+    ```html
+    <a href="https://www.example.com">サンプルサイト</a>
+    ```
+    </details>
+
+1. 以下の条件で画像を表示するコードを書いてください。
+    - 画像のURL: https://www.example.com/image.jpg
+    - 画像の代替テキスト: サンプル画像
+    
+    <details>
+    <summary>解答例</summary>
+
+    ```html
+    <img src="https://www.example.com/image.jpg" alt="サンプル画像">
+    ```
+    </details>
+
+1. 以下のような表を作成してください。  
+
+    | 名前  | 年齢 |
+    |------|------|
+    | 太郎  | 25   |
+    | 花子  | 30   |
+
+    <details>
+    <summary>解答例</summary>
+
+    ```html
+    <table>
+      <tr>
+        <th>名前</th>
+        <th>年齢</th>
+      </tr>
+      <tr>
+        <td>太郎</td>
+        <td>25</td>
+      </tr>
+      <tr>
+        <td>花子</td>
+        <td>30</td>
+      </tr>
+    </table>
+    ```
+    </details>
+
+1. 以下の文章の「?」の部分に、適切なHTMLタグを入れてください。
+
+    ```html
+    <?>これは重要なテキストです<?>。
+    ```
+
+    <details>
+    <summary>解答例</summary>
+
+    ```html
+    <strong>これは重要なテキストです</strong>。
+    ```
+    </details>
+
+1. 以下の条件でフォームを作成してください。  
+    <img src="images/HTML_CSS/HTML27.png" width="300px">  
+
+    - ユーザー名を入力するテキストボックス（name="username"）
+    - 送信ボタン
+
+
+    <details>
+    <summary>解答例</summary>
+
+    ```html
+    <form>
+      <label for="username">ユーザー名:</label>
+      <input type="text" id="username" name="username">
+      <button type="submit">送信</button>
+    </form>
+    ```
+    </details>
