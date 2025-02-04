@@ -5,7 +5,7 @@
 + [CSSの書き方](#cssの書き方)  
   + [CSSの基本構造](#cssの基本構造)  
   + [CSSでよく使われるタグ](#cssでよく使われるタグ)  
-  + [CSSを書いてみよう](#cssを書いてみよう)
++ [練習問題：CSSを書いてみよう](#練習問題cssを書いてみよう)  
 
 <br>
 
@@ -24,6 +24,82 @@ CSSはHTMLの要素にスタイル（デザイン）を適用するために使�
 
 - **`セレクタ`**  
   **スタイルを適用したいHTML要素**を指定します。例えば、`h1`タグにスタイルを適用したい場合、セレクタは`h1`になります。
+  <details>
+  <summary>セレクタ一覧</summary>
+
+  #### 要素セレクタ
+  | セレクタ          | 説明                                      | 例                                  |
+  |-------------------|-------------------------------------------|-------------------------------------|
+  | **要素セレクタ**   | HTMLタグ名で選択                          | `p { color: blue; }`               |
+  | **全体セレクタ**   | すべての要素を選択                        | `* { margin: 0; padding: 0; }`     |
+
+  ---
+
+  #### クラスセレクタ
+  | セレクタ            | 説明                                      | 例                                      |
+  |---------------------|-------------------------------------------|-----------------------------------------|
+  | **クラスセレクタ**   | 特定のクラスを持つ要素を選択             | `.sample-class { font-size: 16px; }`   |
+  | **グループ化セレクタ** | 複数のセレクタをカンマで区切って一度に指定 | `h1, h2, h3 { font-family: Arial; }`   |
+
+  ---
+
+  #### IDセレクタ
+  | セレクタ         | 説明                                       | 例                                      |
+  |------------------|--------------------------------------------|-----------------------------------------|
+  | **IDセレクタ**   | 特定のIDを持つ要素を選択                  | `#sample-id { background-color: yellow; }` |
+
+  ---
+
+  #### 子孫・子・兄弟セレクタ
+  | セレクタ             | 説明                                     | 例                                      |
+  |----------------------|------------------------------------------|-----------------------------------------|
+  | **子孫セレクタ**     | 親要素の中にある任意の子孫要素を選択     | `div p { color: red; }`                |
+  | **子セレクタ**       | 直接の子要素のみを選択                   | `div > p { font-size: 18px; }`         |
+  | **隣接兄弟セレクタ** | 同じ親を持つ直後の隣接する兄弟要素を選択 | `h1 + p { color: green; }`             |
+  | **一般兄弟セレクタ** | 同じ親を持つすべての兄弟要素を選択       | `h1 ~ p { color: orange; }`            |
+
+  ---
+
+  #### 属性セレクタ
+  | セレクタ             | 説明                                      | 例                                         |
+  |----------------------|-------------------------------------------|--------------------------------------------|
+  | **属性セレクタ**     | 特定の属性を持つ要素を選択                | `a[href] { color: blue; }`                |
+  | **部分一致セレクタ** | 属性値が指定した値で始まる、終わる、または含む要素を選択 | `a[href^="https"] { color: green; }`     |
+
+  ---
+
+  #### 擬似クラスセレクタ
+  | セレクタ               | 説明                                      | 例                                       |
+  |------------------------|-------------------------------------------|------------------------------------------|
+  | **:focus**             | 要素がフォーカスされている時に適用       | `input:focus { background-color: lightyellow; }` |
+  | **:nth-child()**       | 特定の順番にある子要素を選択            | `li:nth-child(odd) { background-color: lightgray; }` |
+  | **:first-child**       | 親要素の最初の子要素を選択               | `p:first-child { font-weight: bold; }`  |
+  | **:last-child**        | 親要素の最後の子要素を選択               | `p:last-child { margin-bottom: 0; }`    |
+  | **:not()**             | 指定した要素以外を選択                   | `p:not(.highlight) { color: gray; }`    |
+  | **:checked**           | チェックボックスやラジオボタンが選択されている要素 | `input:checked { background-color: green; }` |
+  | **:disabled**          | 無効な要素を選択                         | `button:disabled { background-color: gray; }` |
+  | **:empty**             | 子要素がない要素を選択                   | `div:empty { display: none; }`           |
+
+  ---
+
+  #### 擬似要素セレクタ
+  | セレクタ               | 説明                                      | 例                                       |
+  |------------------------|-------------------------------------------|------------------------------------------|
+  | **::before**           | 要素の前にコンテンツを挿入                | `p::before { content: "※"; color: red; }` |
+  | **::after**            | 要素の後にコンテンツを挿入                | `p::after { content: " - 完了"; }`       |
+  | **::first-letter**     | 要素の最初の文字を選択                   | `p::first-letter { font-size: 2em; }`    |
+  | **::first-line**       | 要素の最初の行を選択                     | `p::first-line { font-weight: bold; }`   |
+  | **::selection**        | ユーザーが選択した部分にスタイルを適用   | `::selection { background-color: yellow; }` |
+
+  ---
+
+  #### その他のセレクタ
+  | セレクタ         | 説明                                       | 例                                      |
+  |------------------|--------------------------------------------|-----------------------------------------|
+  | **:root**        | ルート要素（通常は`<html>`）               | `:root { --main-color: #3498db; }`     |
+  | **:lang()**      | 特定の言語に対するスタイルを適用           | `p:lang(en) { color: blue; }`          |
+  ---
+  </details>
 
 - **`プロパティ`**  
   **どのスタイルを変更したいか**を指定します。例えば、`color`（文字色）、`font-size`（文字サイズ）、`background-color`（背景色）などです。
@@ -31,21 +107,57 @@ CSSはHTMLの要素にスタイル（デザイン）を適用するために使�
 - **`値`**  
   **プロパティに対して設定する具体的な値**です。例えば、`color`の値には色名（`red`）やカラーコード（`#ff0000`）を指定できます。
 
-例：
 ```css
+/* sample.css */
+
+/*h1にスタイルを指定する*/
 h1 {
-    color: blue;
-    font-size: 2em;
+    color: red; /* 文字を赤にする */
 }
 
-p {
-    color: gray;
-    line-height: 1.5;
+/*class名"sample-class"にスタイルを指定する*/
+.sample-class {
+    font-size: 20px;  /* 文字サイズを20pxにする */
+}
+
+/*id名"sample_id-0"にスタイルを指定する*/
+#sample_id-0 {
+    background-color: yellow; /* 背景色を黄色にする */
 }
 ```
 
-プレビュー:  
-<img src="images/HTML_CSS/HTML11.png" width="300px">  
+また、CSSはHTML上に`<style>`~`</style>`で囲って埋め込むことも、拡張子を`.css`にして1つのファイルとして独立させることもできます。  
+
+例として、上記のCSSを以下のHTMLに適用してみます。  
+
+```html
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSSの適用例</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <h1>これは見出し（h1）です</h1>
+
+    <p class="sample-class">このテキストはclass名が "sample-class" です。</p>
+
+    <div id="sample_id-0">
+        <p>このテキストの親要素は div(idが"sample_id-0") です。</p>
+    </div>
+
+</body>
+</html>
+```
+
+プレビューは以下のようになります。  
+
+<img src="images/HTML_CSS/CSS0.png" width="500px">   
+
+これらを組み合わせて、より魅力的なページに仕上げる事ができます。  
 
 <br>
 
@@ -53,60 +165,205 @@ p {
 
 ### CSSでよく使われるタグ
 
-| | |
-| **`margin`** | **外部余白（マージン）** を調整します。 |
-| **`padding`** | **内部余白（パディング）** を調整します。 |
++ **`margin`**  
+  **外部余白（マージン）** を調整します。  
+  ```css
+  .example {
+      margin: 20px; /* すべての方向に20pxの余白を設定 */
+  }
+  ```
++ **`border`**  
+  **線(ボーダー)** を調整します。  
+  ```css
+  .example {
+    border: 2px solid red; /* 2pxの赤い実線のボーダーを設定 */
+  }
+  ```
+
++ **`padding`**  
+  **内部余白（パディング）** を調整します。  
+  ```css
+  .example {
+    padding: 15px; /* すべての方向に15pxの余白を設定 */
+  }
+  ```
+
++ **`width`**  
+  **横幅** を調整します。  
+  ```css
+  .example {
+    width: 300px; /* 横幅を300pxに設定 */
+  }
+  ```
+
++ **`height`**  
+  **縦幅** を調整します。  
+  ```css
+  .example {
+    height: 200px; /* 縦幅を200pxに設定 */
+  }
+  ```
+
+  <img src="images/HTML_CSS/CSS1.png" width="700px">  
 
 + **`color`**  
   **文字色** を変更します。  
   <img src="images/HTML_CSS/HTML12.png" width="300px">  
+  ```css
+  .example {
+    color: blue; /* 文字色を青に設定 */
+  }
+  ```
 
 + **`background-color`**  
   **背景色** を変更します。  
   <img src="images/HTML_CSS/HTML13.png" width="300px">  
+  ```css
+  .example {
+    background-color: yellow; /* 背景色を黄色に設定 */
+  }
+  ```
 
 + **`font-size`**  
    **文字の大きさ** を変更します。  
   <img src="images/HTML_CSS/HTML14.png" width="300px">  
-
+  ```css
+  .example {
+    font-size: 18px; /* 文字の大きさを18pxに設定 */
+  }
+  ```
+  
 + **`text-align`**  
   **文字の配置** を変更します（左寄せ、中央寄せなど）。   
   <img src="images/HTML_CSS/HTML15.png" width="300px">  
+  ```css
+  .example {
+    text-align: center; /* 文字を中央に配置 */
+  }
+  ```
 
-
-
-[このほかにも様々なタグがあります。](04-03_CSSタグ集.md)
+[このほかにも様々なタグがあります。](04-03_CSSタグ集.md)  
 
 <br>
 
 ---
 
-### CSSを書いてみよう
-HTMLのページにCSSを追加して、見栄えを整えてみましょう。次の例のように、スタイルを加えてみてください。
+## 練習問題：CSSを書いてみよう  
+HTMLのページにCSSを追加して、見栄えを整えてみましょう。  
 
-```css
-h1 {
-    color: green;
-    font-size: 2.5em;
-    text-align: center;
-}
+1. **h1の文字色を青に変更してください**  
 
-ul {
-    background-color: lightblue;
-    padding: 10px;
-}
+    ```html
+    <!DOCTYPE html>
+    <html lang="ja">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>CSS練習問題1</title>
+        <link rel="stylesheet" href="style.css">
+    </head>
+    <body>
+        <h1>見出しの色を変えよう</h1>
+    </body>
+    </html>
+    ```
 
-a {
-    color: red;
-    text-decoration: none;
-}
+    <details>
+    <summary>解答例</summary>
 
-p {
-    font-size: 1.2em;
-    margin-bottom: 20px;
-}
-```
+    ```css
+    h1 {
+        color: blue;
+    }
+    ```
+    </details>
 
-このように、CSSを使ってHTMLにデザインを施すことで、ウェブページがより視覚的に魅力的になります。
+1. **p要素の文字サイズを1.5emに変更してください**  
 
----
+    ```html
+    <!DOCTYPE html>
+    <html lang="ja">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>CSS練習問題2</title>
+        <link rel="stylesheet" href="style.css">
+    </head>
+    <body>
+        <p>この文章の文字を大きくしよう</p>
+    </body>
+    </html>
+    ```
+
+    <details>
+    <summary>解答例</summary>
+
+    ```css
+    p {
+        font-size: 1.5em;
+    }
+    ```
+    </details>
+
+1. **ボタンの背景色を緑に、文字色を白に変更してください**  
+
+    ```html
+    <!DOCTYPE html>
+    <html lang="ja">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>CSS練習問題3</title>
+        <link rel="stylesheet" href="style.css">
+    </head>
+    <body>
+        <button>クリック</button>
+    </body>
+    </html>
+    ```
+
+    <details>
+    <summary>解答例</summary>
+
+    ```css
+    button {
+        background-color: green;
+        color: white;
+    }
+    ```
+    </details>
+
+1. **リストの背景色を灰色に、リスト項目の間隔を10pxにしてください**  
+
+    ```html
+    <!DOCTYPE html>
+    <html lang="ja">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>CSS練習問題4</title>
+        <link rel="stylesheet" href="style.css">
+    </head>
+    <body>
+        <ul>
+            <li>項目1</li>
+            <li>項目2</li>
+            <li>項目3</li>
+        </ul>
+    </body>
+    </html>
+    ```
+
+    <details>
+    <summary>解答例</summary>
+
+    ```css
+    ul {
+        background-color: gray;
+    }
+
+    li {
+        margin-bottom: 10px;
+    }
+    ```
+    </details>
