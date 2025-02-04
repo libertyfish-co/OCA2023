@@ -740,32 +740,6 @@ end
 
 ---
 
-`config/environments/development.rb`
-```rb
-require "active_support/core_ext/integer/time"
-
-Rails.application.configure do
-  # 省略
-
-  # 追加　ここから
-  config.action_mailer.delivery_method = :smtp
-  config.action_mailer.smtp_settings = {
-    address: 'smtp.gmail.com',
-    port: 587,
-    domain: 'gmail.com',
-    user_name: ENV['MAIL_USER_NAME'],
-    password: ENV['MAIL_PASSWORD'],
-    authentication: 'plain',
-    enable_starttls_auto: true
-  }
-  # 追加　ここまで
-
-  # 省略
-end
-```
-
----
-
 `/app/controllers/application_controller.rb`
 ```rb
 class ApplicationController < ActionController::Base
