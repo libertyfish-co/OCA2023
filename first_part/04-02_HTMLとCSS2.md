@@ -178,6 +178,10 @@ h1 {
   }
   ```
 
+  <img src="images/HTML_CSS/HTML12.png" width="300px">
+
+---
+
 + **`background-color`**  
   **背景色** を変更します。  
   ```css
@@ -185,6 +189,10 @@ h1 {
     background-color: yellow; /* 背景色を黄色に設定 */
   }
   ```
+
+  <img src="images/HTML_CSS/HTML13.png" width="300px">
+
+---
 
 + **`font-size`**  
   **文字の大きさ** を変更します。  
@@ -194,6 +202,10 @@ h1 {
   }
   ```
 
+  <img src="images/HTML_CSS/HTML14.png" width="300px">
+
+---
+
 + **`text-align`**  
   **文字の配置** を変更します（左寄せ、中央寄せなど）。  
   ```css
@@ -201,6 +213,10 @@ h1 {
     text-align: center; /* 文字を中央に配置 */
   }
   ```
+
+  <img src="images/HTML_CSS/HTML15.png" width="300px">  
+
+---
 
 + **`margin`**  
   **外部余白（マージン）** を調整します。  
@@ -242,6 +258,11 @@ h1 {
     height: 200px; /* 縦幅を200pxに設定 */
   }
   ```
+
+  <img src="images/HTML_CSS/CSS1.png" width="600px">  
+
+---
+
 </details>
 
 
@@ -255,6 +276,8 @@ h1 {
     background-image: url('image.jpg'); /* 背景画像を設定 */
   }
   ```
+  <img src="images/HTML_CSS/CSS8.png" width="600px">  
+---
 
 + **`background-position`**  
   **背景画像の位置** を調整します。  
@@ -263,6 +286,9 @@ h1 {
     background-position: center; /* 背景画像を中央に配置 */
   }
   ```
+  <img src="images/HTML_CSS/CSS11.png" width="600px">  
+
+---
 
 + **`background-size`**  
   **背景画像のサイズ** を調整します。  
@@ -272,6 +298,10 @@ h1 {
   }
   ```
 
+  <img src="images/HTML_CSS/CSS9.png" width="600px">  
+
+---
+
 + **`background-repeat`**  
   **背景画像の繰り返し** を設定します。  
   ```css
@@ -279,6 +309,10 @@ h1 {
     background-repeat: no-repeat; /* 背景画像の繰り返しを無効化 */
   }
   ```
+
+  <img src="images/HTML_CSS/CSS10.png" width="600px">  
+
+---
 
 </details>
 
@@ -294,6 +328,8 @@ h1 {
   }
   ```
 
+  <img src="images/HTML_CSS/CSS2.png" width="250px">  
+
 + **`font-weight`**  
   **文字の太さ** を調整します。  
   ```css
@@ -301,6 +337,8 @@ h1 {
     font-weight: bold; /* 文字を太字に設定 */
   }
   ```
+
+  <img src="images/HTML_CSS/CSS3.png" width="250px">  
 
 + **`font-style`**  
   **フォントのスタイル** を変更します。  
@@ -310,6 +348,8 @@ h1 {
   }
   ```
 
+  <img src="images/HTML_CSS/CSS4.png" width="250px">  
+
 + **`text-transform`**  
   **テキストの変換** を設定します（大文字、小文字など）。  
   ```css
@@ -317,6 +357,8 @@ h1 {
     text-transform: uppercase; /* 文字をすべて大文字に設定 */
   }
   ```
+
+  <img src="images/HTML_CSS/CSS5.png" width="250px">  
 
 + **`text-shadow`**  
   **テキストの影** を設定します。  
@@ -326,6 +368,8 @@ h1 {
   }
   ```
 
+  <img src="images/HTML_CSS/CSS6.png" width="250px">  
+
 + **`line-height`**  
   **行の高さ** を設定します。  
   ```css
@@ -333,6 +377,8 @@ h1 {
     line-height: 1.5; /* 行の高さを1.5倍に設定 */
   }
   ```
+
+  <img src="images/HTML_CSS/CSS7.png" width="250px">  
 
 </details>
 
