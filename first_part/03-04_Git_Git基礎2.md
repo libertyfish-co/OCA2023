@@ -217,13 +217,13 @@ Codespacesは必要以上に多くの環境を長時間立ち上げたり、大�
 ここからは実際にCodespacesの利用方法を説明していきます。今回は前に作成したリモートリポジトリ**FizzBuzz**をもとに行っていきます。
 
 1. リポジトリ**FizzBuzz**のトップページに移動してから**Code**ボタン（①）をクリックします。そうすると下の図のような状態になるため、**Create codespace on main**ボタン（②）をクリックしてください。  
-  <img src="images/Git基礎/codespaces_初期作成.png"> 
+    <img src="images/Git基礎/codespaces_初期作成.png"> 
 
 1. 画面が遷移されて、少し待つと下の図のようになります。これでこのリポジトリのCodespaceが作成されて、利用可能になります。Codespaceを閉じたい時はタブを閉じるか前の画面に戻ると停止状態になります。
-  <img src="images/Git基礎/codespaces_作業画面.png"> 
+    <img src="images/Git基礎/codespaces_作業画面.png"> 
 
 1. 閉じた後にリポジトリのトップページに戻って再度**Code**ボタン（①）をクリックすると、下の図のようになります。最初は無かった部分が表示されているのが分かります。この場合ですと**silver acorn**をクリックすることで作成したCodespaceを再び開くことが可能です。  
-  <img src="images/Git基礎/codespaces_作成後.png"> 
+    <img src="images/Git基礎/codespaces_作成後.png"> 
 
 1. 作成したCodespaceを削除したい場合は、Codespaceの右側にある`・・・`をクリックするとバーが表示されるため、一番下の`Delete`をクリックして削除できます。  
-  <img src="images/Git基礎/codespaces_削除方法.png">
+    <img src="images/Git基礎/codespaces_削除方法.png">
