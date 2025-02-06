@@ -1,4 +1,5 @@
-# 6 Ruby on Rails：データベース基礎
+# 6 Ruby on Rails：データベース設計
+
 ## 目次
 
 - [ER図](#er図)

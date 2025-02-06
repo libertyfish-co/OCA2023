@@ -1,4 +1,5 @@
 # 6 Ruby on Rails：データベース基礎
+
 ## 目次
 
 - [ActiveRecordでの効率的なデータ取得](#activerecordでの効率的なデータ取得)
