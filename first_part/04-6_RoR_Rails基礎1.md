@@ -36,9 +36,15 @@ Railsは、デンマークのプログラマーでデビッド・ハイネマイ
    そのため、初心者にとって学びやすい**フレームワーク**とされています。
 
 
-#### どんな考えで動くの？
-Railsは「**Convention over Configuration**（設定より規約）」  
-「**決められたルールに従えば、特別な設定なしで自動的に動作する**」という考え方です。  
+Railsはどう書けばいいの？
+Railsは以下の考え方(設計思想)で動かします。
+
+* CoC　(Convention over Configuration)
+設定より規約。デフォルトのルールを活用
+* DRY (Don’t Repeat Yourself)
+同じコードを繰り返さない
+* REST（Representational State Transfer）
+一貫したリソース設計
 
 例えば、お店で商品を注文したときをイメージしてください。  
 
