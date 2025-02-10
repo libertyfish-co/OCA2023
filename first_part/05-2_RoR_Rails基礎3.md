@@ -280,3 +280,30 @@ end
 ここまでで紹介したものが、Railsの基本的な作り方です。  
 今回のものではまだ簡単な登録だけだったり、デザインも何もついていないので、  
 次の章からはその辺りも考慮しながら、よりWEBアプリらしいものを作成してみましょう。
+
+### 5.2.1 練習
+
+新しいRailsのアプリケーションを'library'という名前で作成してみましょう。
+テーブルBookは以下のようなカラムを持っているとする。
+- title(string) 空白チェック有
+- author(string)
+- pages(integer)
+
+### 5.2.1 解答(練習)
+
+以下を実行
+```sh
+rails new library
+cd library
+rails g scaffold Book title:string author:string pages:integer
+rails db:migrate
+```
+
+app/models/book.rbに以下を追加
+```rb
+# app/models/book.rb
+
+class Book < ApplicationRecord
+    validates :title, presence: true # 追加
+end
+```

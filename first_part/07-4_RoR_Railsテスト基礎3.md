@@ -24,7 +24,7 @@ end
 
 FactoryBot.define do
   factory :user do
-    name { Gimei.new.kanji }
+    name { Gimei.name.kanji }
     phone_number { "XXX-YYYY-ZZZZ" }
   end
 end
