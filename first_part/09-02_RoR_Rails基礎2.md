@@ -12,6 +12,10 @@
 
 **`migrate/（作成日時）_create_テーブル名.rb`**
 
+```
+rails g model （テーブル名）
+```
+このコマンドでモデルの作成と一緒に自動的に作られます。
 このファイルには、自分が作成したテーブル（なにのデータを格納するか）に追加したいカラム（データ列）を記述します。テーブルとカラムについてはこれから学ぶDB基礎のカリキュラムの学習で詳しく触れていくのでここではザックりと説明します。
 
 <img src="images/Rails基礎/マイグレーションファイルカラムの追加.png" width= "600px">
@@ -105,10 +109,10 @@ t.string :family_name
 > テーブル名を変えると記述を変更しないといけない部分がでたりするので気をつけてください
 
 
-カラムの追加、変更、削除したい場合は少し特殊やり方になり2つ方法があります。
+**カラムの追加**、**変更**、**削除**したい場合は少し特殊やり方になり2つ方法があります。
 
 **1つ目**
-1. データベースを初期化、取り消しします。
+1. データベースを初期化、マイグレーションを取り消しします。
      ```
      rails db:reset 
      ```
@@ -149,6 +153,8 @@ t.string :family_name
 
 (メソッド)を`add_column`（追加）、`change_column`(変更)、` remove_column `（削除）のどれかにするとそれぞれの処理がされます。`db/schema.rb`を確認することで結果の確認ができます。
 
+***
+
 **用語解説**
 
 **レコード**
@@ -156,12 +162,69 @@ t.string :family_name
 |------------|-------------|----------------------|----------------------|
 | 太郎       | リバティ    | 2025-02-14 12:34:56  | 2025-02-14 12:34:56  |
 
-保存されたデータのことfirst_nameが太郎、「太郎」「リバティ」「作成日時」「更新日時」がレコードにあたります。  
+保存されたデータのこと「太郎」「リバティ」「作成日時」「更新日時」がレコードにあたります。  
 詳しくはカリキュラムのＤＢ基礎で説明します。
 
+***
+
 #### ルーティングについて
+
+config/routes.rb は、Rails アプリケーションのルーティング設定を行うファイルです。ここでは、リクエストされたURLに対応するコントローラーやアクション、そしてデータの送受信方法（HTTPメソッド）を定義します。このファイルを通じて、特定のビューを表示するためのパスや、どのように通信を処理するかが決まります。
+
+
 `root to
 ルーティングまとめる
+
+__【routes.rb】__  
+まず初めに、ルーティングの確認をしてみましょう。  
+先程URLの末尾に`/users`を付け足して、きちんとページが表示されたということは、  
+そのURLにアプリが対応できるようになったということです。  
+その設定は`/config/routes.rb`のファイルに書かれているはずなので、そのファイルを確認してみましょう。  
+
+```rb
+# config/routes.rb
+Rails.application.routes.draw do
+  resources :users
+  ・
+  ・
+  ・
+end
+```
+
+記述の中に`resources :users`と書かれている部分がありますね。  
+実はこの一行のコードで、8個分のルーティングが設定できるようになっています。  
+
+このルーティングの設定は、以下のコマンドで確認できます。  
+Railsアプリを実行中の場合は、もう一つターミナルを立ち上げて実行してみてください。  
+
+```sh
+$ rails routes
+```
+
+実行すると以下のような内容が表示されるはずです。  
+
+```sh
+   Prefix Verb   URI Pattern               Controller#Action
+    users GET    /users(.:format)          users#index
+          POST   /users(.:format)          users#create
+ new_user GET    /users/new(.:format)      users#new
+edit_user GET    /users/:id/edit(.:format) users#edit
+     user GET    /users/:id(.:format)      users#show
+          PATCH  /users/:id(.:format)      users#update
+          PUT    /users/:id(.:format)      users#update
+          DELETE /users/:id(.:format)      users#destroy
+```
+
+右端の列にあるのは、アクションメソッドと呼ばれるControllerに定義されたメソッドです。  
+上記の一覧では、「特定のURLにアクセスすると、それに対応したControllerのメソッドが呼び出される」  
+ということが表されています。このアクションメソッドを`CRUD`に当てはめると下記のようになります。  
+
+|CRUD|アクション|
+|:--|:--|
+|Create|新規作成(new, create)|
+|Read|データ一覧・個別の表示(index, show)|
+|Update|データの編集・更新(edit, update)|
+|Delete|データの削除(destroy)|
 
 #### modelについて
 バリデーション
@@ -177,7 +240,7 @@ t.string :family_name
 レイアウトアプリケーションファイルの説明
 <%= yield %>メソッド
 
-#### 各機能について
+#### CRUD
 
 
 
@@ -276,53 +339,3 @@ WEBページとして欲しい機能の基礎が出来上がりました。
 これはどういう仕組みで動いているのでしょうか？  
 具体的な仕組みや構造を、生成された各ファイルを見ながら辿ってみましょう。  
 
-__【routes.rb】__  
-まず初めに、ルーティングの確認をしてみましょう。  
-先程URLの末尾に`/users`を付け足して、きちんとページが表示されたということは、  
-そのURLにアプリが対応できるようになったということです。  
-その設定は`/config/routes.rb`のファイルに書かれているはずなので、そのファイルを確認してみましょう。  
-
-```rb
-# config/routes.rb
-Rails.application.routes.draw do
-  resources :users
-  ・
-  ・
-  ・
-end
-```
-
-記述の中に`resources :users`と書かれている部分がありますね。  
-実はこの一行のコードで、8個分のルーティングが設定できるようになっています。  
-
-このルーティングの設定は、以下のコマンドで確認できます。  
-Railsアプリを実行中の場合は、もう一つターミナルを立ち上げて実行してみてください。  
-
-```sh
-$ rails routes
-```
-
-実行すると以下のような内容が表示されるはずです。  
-
-```sh
-   Prefix Verb   URI Pattern               Controller#Action
-    users GET    /users(.:format)          users#index
-          POST   /users(.:format)          users#create
- new_user GET    /users/new(.:format)      users#new
-edit_user GET    /users/:id/edit(.:format) users#edit
-     user GET    /users/:id(.:format)      users#show
-          PATCH  /users/:id(.:format)      users#update
-          PUT    /users/:id(.:format)      users#update
-          DELETE /users/:id(.:format)      users#destroy
-```
-
-右端の列にあるのは、アクションメソッドと呼ばれるControllerに定義されたメソッドです。  
-上記の一覧では、「特定のURLにアクセスすると、それに対応したControllerのメソッドが呼び出される」  
-ということが表されています。このアクションメソッドを`CRUD`に当てはめると下記のようになります。  
-
-|CRUD|アクション|
-|:--|:--|
-|Create|新規作成(new, create)|
-|Read|データ一覧・個別の表示(index, show)|
-|Update|データの編集・更新(edit, update)|
-|Delete|データの削除(destroy)|
