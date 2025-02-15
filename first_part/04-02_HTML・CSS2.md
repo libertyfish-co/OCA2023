@@ -1,5 +1,5 @@
 
-# 4 HTMLとCSS
+# 4 HTML・CSS
 
 ## 目次
 + [CSSの書き方](#cssの書き方)  
