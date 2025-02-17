@@ -603,7 +603,9 @@ Rails.application.routes.draw do
 
   devise_for :users
 
-  root to: "products#index"
+  devise_scope :user do
+    root "users/sessions#new"
+  end
 
   get '/search', to: 'searchs#search'
 
