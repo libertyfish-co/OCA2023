@@ -210,7 +210,7 @@ end
 
 
 - 利用者一覧  
-  ![画像](images/05-6-1.png)  
+  ![画像](images/Bootstrap/Bootstrap1.png)  
 
   ```html
   <!-- app/views/users/_form.html.erb -->
@@ -250,7 +250,7 @@ end
   ```
 
 - 入力画面  
-  ![画像](images/05-6-2.png)  
+  ![画像](images/Bootstrap/Bootstrap2.png)  
 
   ```html
   <!-- app/views/users/index.html.erb -->
@@ -291,7 +291,7 @@ end
   ```
 
 - 詳細画面  
-  ![画像](images/05-6-3.png)  
+  ![画像](images/Bootstrap/Bootstrap3.png)  
 
   ```html
   <!-- app/views/users/show.html.erb -->
