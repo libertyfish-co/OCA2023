@@ -184,12 +184,12 @@ Railsも同じように、「**1.決まった名前**」や「**2.ルール**」
 
 1. **モデルの作成**
    ```
-   rails g model users
+   rails g model user
    ```
    コマンドでモデルの作成をしましょう。
     実行するといくつかファイルが作成されたと思います。  
-    作成されたファイルの「 `db/migrate/（作成日時）_create_users.rb` 」ファイルを開いて見ましょう。 
-   > メモ ： dbと名前のついているフォルダの中にあります。これから「 `db/migrate/（作成日時）_create_users.rb` 」のような書き方をしていきます。
+    作成されたファイルの「 `db/migrate/（作成日時）_create_user.rb` 」ファイルを開いて見ましょう。 
+   > メモ ： dbと名前のついているフォルダの中にあります。これから「 `db/migrate/（作成日時）_create_user.rb` 」のような書き方をしていきます。
     
     <img src="images/Rails基礎/マイグレーションファイル中身.png" width= "600px">
 
@@ -623,6 +623,8 @@ Webシステム開発では、**アプリ内で画像を使用するとき**、*
 | `rails test`                                  | テストの実行                           |
 | `rails generate helper ヘルパー名`             | 新しいヘルパーを作成                   |
 | `rails generate system_test テスト名`          | 新しいシステムテストを作成             |
-| `bundle install`                              | Gemの依存関係をインストール             |
+| `bundle install`            F                  | Gemの依存関係をインストール             |
+
+> `rails generate`は`rails g`と省略することが可能です。
 
 これらのコマンドは、アプリケーションの開発、データベース操作、テスト、デプロイなど、さまざまな作業を行うために不可欠です。コマンドは使って行く中で覚えていけますので慣れて行きましょう。
